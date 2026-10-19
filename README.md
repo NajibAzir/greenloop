@@ -7,7 +7,6 @@ the points economy and cut logistics cost with AI fleet dispatch. All data is
 simulated client-side — no backend, no API keys required.
 
 **Live demo:** https://greenloop-tan.vercel.app
-**Repo:** https://github.com/NajibAzir/greenloop
 
 ---
 
