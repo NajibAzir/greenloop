@@ -19,7 +19,6 @@ function lazyInit() {
 export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, lazyInit)
 
-  // Persist to localStorage on every change.
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
@@ -41,8 +40,9 @@ export function useStore() {
   return ctx
 }
 
-// Convenience: the currently-active persona account (residence or tenant).
+// The account of the currently logged-in user/tenant.
 export function useAccount() {
   const { state } = useStore()
-  return state.accounts[state.accountType]
+  const key = state.auth?.session?.id || state.accountType
+  return state.accounts[key]
 }

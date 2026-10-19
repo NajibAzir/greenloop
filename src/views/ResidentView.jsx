@@ -266,7 +266,7 @@ function ScanAndDropoff() {
 // -------------------------------------------------------------------------
 // Redeem Vouchers page
 // -------------------------------------------------------------------------
-function RedeemVouchers() {
+export function RedeemVouchers() {
   const { dispatch } = useStore()
   const account = useAccount()
   const [openVoucher, setOpenVoucher] = useState(null)
@@ -359,7 +359,7 @@ function RedeemVouchers() {
 // -------------------------------------------------------------------------
 // Offset Maintenance Fee page (slider)
 // -------------------------------------------------------------------------
-function OffsetFee() {
+export function OffsetFee() {
   const { state, dispatch } = useStore()
   const account = useAccount()
   const acct = ACCOUNT_TYPES[state.accountType] || ACCOUNT_TYPES.residence
@@ -493,7 +493,7 @@ function fmtTime(ts) {
   })
 }
 
-function MyActivity() {
+export function MyActivity() {
   const account = useAccount()
 
   const events = [
