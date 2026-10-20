@@ -223,8 +223,18 @@ export function monthlySeries(transactions, year, withForecast = false) {
   const rows = []
   for (let m = 0; m < 12; m++) {
     const v = monthValue(base, year, m)
-    // Forecast covers the current month and everything after it.
-    const isFutureOrNow = v.offset >= 0
+    let forecast = null
+    if (withForecast) {
+      if (v.offset === 0) {
+        // Current month: anchor the projection to the ACTUAL (partial) value so
+        // the dashed line continues from exactly where the solid line ends,
+        // instead of jumping up to a full-month estimate.
+        forecast = v.kg
+      } else if (v.offset > 0) {
+        // Future months: the projected full-month diversion.
+        forecast = projectedMonthKg(base, year, m)
+      }
+    }
     rows.push({
       key: `${year}-${m}`,
       label: `${MONTH_ABBR[m]} ${String(year).slice(2)}`,
@@ -235,12 +245,12 @@ export function monthlySeries(transactions, year, withForecast = false) {
       partial: v.partial,
       actual: v.empty ? null : v.kg,
       kg: v.empty ? null : v.kg,
-      forecast: withForecast && isFutureOrNow ? projectedMonthKg(base, year, m) : null,
+      forecast,
     })
   }
-  // Bridge: the last actual month also carries a forecast point so the solid
-  // and dashed lines meet without a visible gap at "now".
-  if (withForecast) {
+  // Bridge: if the current month isn't in this year (viewing a past year), let
+  // the last actual month carry a forecast point so the lines still connect.
+  if (withForecast && !rows.some((r) => r.isNow)) {
     const lastActual = [...rows].reverse().find((r) => r.actual != null)
     if (lastActual && lastActual.forecast == null) lastActual.forecast = lastActual.actual
   }
@@ -293,6 +303,16 @@ export function annualSeries(transactions, years, withForecast = false) {
   const rows = years.map((y) => {
     const t = yearTotal(transactions, y)
     const future = y > ny
+    let forecast = null
+    if (withForecast) {
+      if (y === ny) {
+        // Current year: anchor the projection to the year-to-date actual so the
+        // dashed line continues from where the solid line ends.
+        forecast = t.kg
+      } else if (future) {
+        forecast = projectedYearKg(base, y)
+      }
+    }
     return {
       key: String(y),
       label: String(y),
@@ -302,11 +322,10 @@ export function annualSeries(transactions, years, withForecast = false) {
       kg: future ? null : t.kg,
       empty: future,
       partial: y === ny,
-      // Forecast (dashed) covers the current year onward when requested.
-      forecast: withForecast && y >= ny ? projectedYearKg(base, y) : null,
+      forecast,
     }
   })
-  if (withForecast) {
+  if (withForecast && !rows.some((r) => r.year === ny)) {
     const lastActual = [...rows].reverse().find((r) => r.actual != null)
     if (lastActual && lastActual.forecast == null) lastActual.forecast = lastActual.actual
   }

@@ -42,14 +42,14 @@ function TrendStat({ label, value, sub, accent = 'text-slate-900', trend }) {
         {trend && (
           <span
             className={`inline-flex shrink-0 items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs font-semibold ${
-              trend.up ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+              trend.up ? 'gl-badge-pos bg-green-100 text-green-700' : 'gl-badge-neg bg-red-100 text-red-700'
             }`}
           >
             {trend.up ? '▲' : '▼'} {Math.abs(trend.pct)}%
           </span>
         )}
       </div>
-      <p className={`mt-1 text-xl font-bold tabular-nums sm:text-2xl ${accent}`}>{value}</p>
+      <p className={`mt-1 text-xl font-bold tabular-nums sm:text-2xl ${accent === 'text-green-600' ? 'gl-stat-pos' : ''} ${accent}`}>{value}</p>
       {sub && <p className="mt-0.5 text-xs text-slate-500">{sub}</p>}
     </div>
   )
@@ -367,7 +367,7 @@ function BenefitRow({ label, value, note, sign = '+' }) {
         <span className="text-sm text-slate-700">{label}</span>
         {note && <span className="ml-1 text-xs text-slate-400">{note}</span>}
       </div>
-      <span className={`text-sm font-semibold tabular-nums ${positive ? 'text-green-600' : 'text-slate-900'}`}>
+      <span className={`text-sm font-semibold tabular-nums ${positive ? 'gl-num-pos text-green-600' : 'text-slate-900'}`}>
         {sign} {formatRm(value)}
       </span>
     </div>
@@ -416,9 +416,9 @@ function FinancialLedger() {
             />
             <BenefitRow label="Bulk commodity sales" note="direct-to-recycler" value={roi.commoditySales} />
             <BenefitRow label="Carbon / ESG value" note={`@ RM${ECONOMICS.carbonRmPerTonneCo2}/t CO₂`} value={roi.carbonValue} />
-            <div className="flex items-center justify-between bg-green-50 px-4 py-2">
-              <span className="text-sm font-semibold text-green-800">Total benefit</span>
-              <span className="text-sm font-bold tabular-nums text-green-700">{formatRm(roi.totalBenefit)}</span>
+            <div className="gl-box-pos flex items-center justify-between bg-green-50 px-4 py-2">
+              <span className="gl-num-pos text-sm font-semibold text-green-800">Total benefit</span>
+              <span className="gl-num-pos text-sm font-bold tabular-nums text-green-700">{formatRm(roi.totalBenefit)}</span>
             </div>
           </div>
         </Card>
@@ -448,10 +448,10 @@ function FinancialLedger() {
       {/* Verdict banner */}
       <div
         className={`rounded-xl px-5 py-4 ring-1 ${
-          surplusPositive ? 'bg-green-50 ring-green-200' : 'bg-amber-50 ring-amber-200'
+          surplusPositive ? 'gl-box-pos bg-green-50 ring-green-200' : 'bg-amber-50 ring-amber-200'
         }`}
       >
-        <p className={`text-sm font-semibold ${surplusPositive ? 'text-green-800' : 'text-amber-800'}`}>
+        <p className={`text-sm font-semibold ${surplusPositive ? 'gl-num-pos text-green-800' : 'text-amber-800'}`}>
           {surplusPositive
             ? `This hub runs a monthly surplus of ${formatRm(roi.netSurplus)} and pays back its ${formatRm(roi.capex)} setup in about ${fc.paybackMonth ?? '—'} months.`
             : 'Volume is still ramping — load more drop-offs or demo data to reach the operating surplus.'}
