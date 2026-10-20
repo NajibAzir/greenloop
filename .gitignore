@@ -5,6 +5,5 @@ dist-ssr
 .DS_Store
 .vite
 # Pitch deck binaries and one-off deck generators (not part of the app)
-*.pptx
 build_deck.py
 build_template_deck.py
