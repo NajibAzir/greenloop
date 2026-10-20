@@ -106,42 +106,4 @@ describe('reducer', () => {
     expect(s.accountType).toBe('tenant')
     expect(acc(s).tokenBalance).toBe(0)
   })
-
-  it('LOGIN with a demo credential logs into the right role', () => {
-    const s = reducer(initialState(), { type: 'LOGIN', id: 'fath', password: 'greenloop' })
-    expect(s.auth.loggedIn).toBe(true)
-    expect(s.auth.role).toBe('residence')
-    expect(s.accountType).toBe('residence')
-  })
-
-  it('LOGIN with operation id selects the operation role', () => {
-    const s = reducer(initialState(), { type: 'LOGIN', id: 'Synkosys Operations', password: 'synkosys123' })
-    expect(s.auth.role).toBe('operation')
-  })
-
-  it('LOGIN rejects bad credentials', () => {
-    const s = reducer(initialState(), { type: 'LOGIN', id: 'fath', password: 'wrong' })
-    expect(s.auth.loggedIn).toBe(false)
-    expect(s.auth.error).toBeTruthy()
-  })
-
-  it('LOGOUT clears the session', () => {
-    let s = reducer(initialState(), { type: 'LOGIN', role: 'tenant' })
-    s = reducer(s, { type: 'LOGOUT' })
-    expect(s.auth.loggedIn).toBe(false)
-    expect(s.auth.role).toBe(null)
-  })
-
-  it('UPDATE_PROFILE edits the role profile', () => {
-    let s = reducer(initialState(), { type: 'LOGIN', role: 'residence' })
-    s = reducer(s, { type: 'UPDATE_PROFILE', patch: { name: 'New Name' } })
-    expect(s.profiles.residence.name).toBe('New Name')
-  })
-
-  it('SEED keeps the user logged in', () => {
-    let s = reducer(initialState(), { type: 'LOGIN', role: 'operation' })
-    s = reducer(s, { type: 'SEED', transactions: [], residenceTx: [], tenantTx: [] })
-    expect(s.auth.loggedIn).toBe(true)
-    expect(s.auth.role).toBe('operation')
-  })
 })

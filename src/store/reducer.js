@@ -6,7 +6,7 @@ import {
   ACCOUNT_TYPES,
 } from '../data/catalog.js'
 
-export const STORAGE_KEY = 'greenloop-state-v3'
+export const STORAGE_KEY = 'greenloop-state-v2'
 
 // A fresh per-persona account (resident OR mall tenant).
 function emptyAccount(accountType) {
@@ -21,43 +21,9 @@ function emptyAccount(accountType) {
   }
 }
 
-// Default profile cards per role (editable).
-function defaultProfiles() {
-  return {
-    residence: {
-      id: 'USER-00000001',
-      name: 'fath',
-      email: 'fathinzy@gmail.com',
-      address: '16A, Jalan Anggerik, Kampung Melayu',
-      password: 'greenloop',
-    },
-    tenant: {
-      id: 'TENT-00000001',
-      name: 'kedai kopitiam',
-      email: 'kopitiam@gmail.com',
-      address: 'Lot G-08, Greenview Mall',
-      password: 'greenloop',
-    },
-    operation: {
-      id: 'OPS-00000001',
-      name: 'Synkosys Operations',
-      email: 'ops@synkosys.com',
-      address: 'Greenview Township Depot',
-      password: 'synkosys123',
-    },
-  }
-}
-
 export function initialState() {
   return {
-    // --- auth ---
-    auth: {
-      loggedIn: false,
-      role: null, // 'residence' | 'tenant' | 'operation'
-    },
-    profiles: defaultProfiles(),
-
-    accountType: 'residence', // active resident persona (residence | tenant)
+    accountType: 'residence', // active persona
     accounts: {
       residence: emptyAccount('residence'),
       tenant: emptyAccount('tenant'),
@@ -66,24 +32,6 @@ export function initialState() {
     opsTransactions: [], // feeds Diversion Metrics + Financial Ledger
     hubLoads: initialHubLoads(), // live bin levels for the dispatch sim seed
   }
-}
-
-// Map a role to the login id prefix and resident persona (if any).
-const ROLE_META = {
-  residence: { persona: 'residence' },
-  tenant: { persona: 'tenant' },
-  operation: { persona: null },
-}
-
-// Resolve a login id/password against the known profiles. Returns role or null.
-function matchLogin(profiles, id, password) {
-  const key = String(id || '').trim().toLowerCase()
-  for (const role of Object.keys(profiles)) {
-    const p = profiles[role]
-    const ids = [p.id, p.name, p.email].map((s) => String(s).toLowerCase())
-    if (ids.includes(key) && p.password === password) return role
-  }
-  return null
 }
 
 let seq = 0
@@ -197,69 +145,13 @@ export function reducer(state, action) {
       return { ...state, accountType: action.accountType }
     }
 
-    case 'LOGIN': {
-      // action.role set directly (demo buttons) OR resolve id+password.
-      let role = action.role
-      if (!role) role = matchLogin(state.profiles, action.id, action.password)
-      if (!role || !ROLE_META[role]) return { ...state, auth: { ...state.auth, error: 'Invalid credentials' } }
-      const persona = ROLE_META[role].persona
-      return {
-        ...state,
-        auth: { loggedIn: true, role, error: null },
-        accountType: persona || state.accountType,
-      }
-    }
-
-    case 'LOGOUT':
-      return { ...state, auth: { loggedIn: false, role: null, error: null } }
-
-    case 'SWITCH_ROLE': {
-      // Demo shortcut: jump between roles without re-login.
-      const role = action.role
-      if (!ROLE_META[role]) return state
-      const persona = ROLE_META[role].persona
-      return { ...state, auth: { ...state.auth, role }, accountType: persona || state.accountType }
-    }
-
-    case 'REGISTER': {
-      // Create/overwrite a profile for the chosen role and log in.
-      const role = action.role || 'residence'
-      if (!ROLE_META[role]) return state
-      const prefix = role === 'tenant' ? 'TENT' : role === 'operation' ? 'OPS' : 'USER'
-      const profile = {
-        id: `${prefix}-${String(Math.floor(Math.random() * 1e8)).padStart(8, '0')}`,
-        name: action.name || 'New Account',
-        email: action.email || '',
-        address: action.address || '',
-        password: action.password || 'greenloop',
-      }
-      return {
-        ...state,
-        profiles: { ...state.profiles, [role]: profile },
-        auth: { loggedIn: true, role, error: null },
-        accountType: ROLE_META[role].persona || state.accountType,
-      }
-    }
-
-    case 'UPDATE_PROFILE': {
-      const role = action.role || state.auth.role
-      if (!role || !state.profiles[role]) return state
-      return {
-        ...state,
-        profiles: { ...state.profiles, [role]: { ...state.profiles[role], ...action.patch } },
-      }
-    }
-
     case 'SEED': {
       // Township operations throughput (ledger/metrics) + a modest per-account
       // starting balance/history so both personas look populated.
-      // Preserve the current session (auth + profiles) across seeding.
       const txs = action.transactions
       const base = initialState()
       return {
         ...base,
-        auth: state.auth,
-        profiles: state.profiles,
         accountType: state.accountType,
         opsTransactions: txs,
         accounts: {
@@ -270,13 +162,7 @@ export function reducer(state, action) {
     }
 
     case 'RESET':
-      // Clear demo data but stay logged in with the same profiles.
-      return {
-        ...initialState(),
-        auth: state.auth,
-        profiles: state.profiles,
-        accountType: state.accountType,
-      }
+      return { ...initialState(), accountType: state.accountType }
 
     case 'HYDRATE':
       return { ...initialState(), ...action.state }

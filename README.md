@@ -12,12 +12,6 @@ simulated client-side — no backend, no API keys required.
 
 ## Screenshots
 
-### Login — User / Tenant / Operation (one-click demo accounts)
-![Login](docs/screenshots/login.png)
-
-### Resident — Profile
-![Profile](docs/screenshots/user-profile.png)
-
 ### Resident — Scan Hub QR to start a session
 ![Hub QR pairing](docs/screenshots/resident-hub-qr.png)
 
@@ -26,15 +20,6 @@ simulated client-side — no backend, no API keys required.
 
 ### Resident — Redeem Vouchers (QR / barcode / code)
 ![Redeem Vouchers](docs/screenshots/resident-vouchers.png)
-
-### Operations — Recycle Hub grid
-![Recycle Hub grid](docs/screenshots/ops-recyclehub-grid.png)
-
-### Operations — AI Smart Recycle Bin console
-![AI Bin console](docs/screenshots/ops-recyclehub-console.png)
-
-### Operations — Hub Stat (performance, materials, ranking)
-![Hub Stat](docs/screenshots/ops-hubstat.png)
 
 ### Operations — Diversion Metrics (actual vs projected, seasonal)
 ![Diversion Metrics](docs/screenshots/ops-metrics.png)
@@ -62,45 +47,20 @@ npm run build   # production build into dist/
 npm test        # run the Vitest unit tests
 ```
 
-## Login & roles
+## Navigation
 
-The app opens on a **login screen** (simulated local auth — no backend; accounts
-live in `localStorage`). Sign in as **User**, **Tenant**, or **Operation**, or
-use the one-click demo accounts. Register creates a new local account. Demo
-credentials:
+A **mode switch** at the top of the sidebar toggles between the two personas,
+and the sidebar shows only that persona's menu. The sidebar can be collapsed,
+and **Load Demo Data** / **Reset** live at the bottom.
 
-- User — `fath` / `greenloop`
-- Mall Tenant — `kedai kopitiam` / `greenloop`
-- Operation — `Synkosys Operations` / `synkosys123`
+- **Resident & Tenant** — Scan & Drop-off · Redeem Vouchers* · Offset Fee · My Activity
+- **Developer Operations** — Diversion Metrics · Financial Ledger · Logistics & Dispatch
 
-The logged-in role determines the view. A **role toggle** in the sidebar also
-lets you jump between roles for a quick demo. Each role has its own menu:
-
-- **User View** — Profile · Scan · Redeem · Activity
-- **Tenant View** — Profile · Scan · Offset Maintenance Fee · Activity *(no vouchers — a tenant is a business)*
-- **Operation View** — Diversion Metrics · Financial Ledger · Logistics & Dispatch · **Recycle Hub** · **Hub Stat**
-
-Every role has a **Profile** page (avatar, GP balance, ID/name/email/address,
-Edit profile). The header shows the signed-in identity, with **Logout** in the
-sidebar.
-
-## Recycle Hub — AI Smart Recycle Bin (Operations)
-
-Each hub runs an **AI Smart Recycle Bin** that handles common items, with a human
-operator on site for the rest. The **Recycle Hub** page lists registered hubs;
-opening one launches an operator console:
-
-- **Cam 1 — entry detection** accepts PET / aluminium / paper and rejects
-  anything else before the door opens.
-- **Put items into the bay** (drop 1 / 10 / 10-with-1-contaminant); accepted
-  items credit Green Points and feed township metrics.
-- **Cam 2 — inside verification + weight audit** catches contaminants and cheats
-  (drop a stone, a water-filled bottle) → **flag strikes** (bay locks at 3).
-- Live **bay fill levels**, a **Collector** that empties bays over 80%, and an
-  **event log** (Cam 1 / Cam 2 / weight / result).
-
-**Hub Stat** shows hub station performance (GP + weight), recycled material type,
-and the hub contribution ranking.
+An **account toggle** (Residence 🏠 / Mall Tenant 🏬) at the top of the resident
+view switches between two independent accounts — each with its own GP balance,
+history, vouchers and monthly charge. *Vouchers are a consumer perk, so **Mall
+Tenant** accounts don't see Redeem Vouchers; their GP offsets the mall service
+charge instead.
 
 ## How Green Points are granted
 
