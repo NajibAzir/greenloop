@@ -2,7 +2,33 @@ import { useRef, useState } from 'react'
 import { SCAN_TARGETS } from '../data/catalog.js'
 import { Button } from './ui.jsx'
 import ItemImage from './ItemImage.jsx'
+import BinSvg from './BinSvg.jsx'
 import { MIN_SCORE, loadModel, toDetection } from '../lib/vision.js'
+
+// A small, static Smart Bin graphic shown as the scan viewport backdrop so the
+// resident sees the bin they're feeding while an item is analysed.
+function BinBackdrop({ children, scanning }) {
+  return (
+    <div className="relative overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-700">
+      <BinSvg
+        fills={[43, 12, 52]}
+        open={-1}
+        scan={scanning ? 0 : -1}
+        c2={-1}
+        linked
+        connecting={false}
+        flag={false}
+        alert={false}
+        pulse={false}
+        tk={0}
+        resident="You"
+        code="HUB-0001"
+        dark
+      />
+      {children}
+    </div>
+  )
+}
 
 // Simulated computer-vision scan with two sources:
 //  - Example: pick a generated example photo; a mock model returns a verdict.
@@ -146,25 +172,20 @@ export default function ScanItem({ onAccepted }) {
             </div>
           </div>
 
-          <div className="relative mx-auto aspect-square w-56 overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-700">
-            <ItemImage id={targetId} className="h-full w-full" />
-            {phase === 'scanning' && (
-              <div className="absolute inset-x-0 top-0 h-0.5 animate-[scanline_1s_linear_infinite] bg-sky-400 shadow-[0_0_8px_2px_rgba(56,189,248,0.7)]" />
-            )}
-            {phase !== 'idle' && (
-              <div
-                className="absolute left-[20%] top-[16%] h-[68%] w-[60%] rounded-md border-2 transition-colors"
-                style={{ borderColor: boxColor }}
-              >
+          {/* Smart Bin viewport — the selected item is shown in a small inset */}
+          <BinBackdrop scanning={phase === 'scanning'}>
+            <div className="absolute right-2 top-2 h-20 w-20 overflow-hidden rounded-lg bg-slate-800 ring-1 ring-slate-600">
+              <ItemImage id={targetId} className="h-full w-full" />
+              {phase !== 'idle' && (
                 <span
-                  className="absolute -top-5 left-0 rounded px-1 text-[10px] font-semibold text-white"
+                  className="absolute inset-x-0 bottom-0 px-1 py-0.5 text-center text-[9px] font-semibold text-white"
                   style={{ backgroundColor: boxColor }}
                 >
-                  {phase === 'scanning' ? 'detecting…' : `${result.label} ${result.confidence}%`}
+                  {phase === 'scanning' ? 'detecting…' : `${result.confidence}%`}
                 </span>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </BinBackdrop>
 
           <Button onClick={runExampleScan} className="w-full" disabled={phase === 'scanning'}>
             {phase === 'scanning' ? 'Analysing…' : '🔍 Scan Item'}
@@ -191,24 +212,16 @@ export default function ScanItem({ onAccepted }) {
         </>
       ) : (
         <>
-          <div className="relative mx-auto aspect-square w-56 overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-700">
-            {imgUrl ? (
-              <img
-                ref={imgRef}
-                src={imgUrl}
-                alt="uploaded item"
-                crossOrigin="anonymous"
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center px-4 text-center text-sm text-slate-400">
-                🖼️ Upload a photo of an item
-              </div>
-            )}
-            {uploadPhase === 'analysing' && (
-              <div className="absolute inset-x-0 top-0 h-0.5 animate-[scanline_1s_linear_infinite] bg-sky-400 shadow-[0_0_8px_2px_rgba(56,189,248,0.7)]" />
-            )}
-          </div>
+          {/* Smart Bin viewport — the uploaded photo is shown in a small inset */}
+          <BinBackdrop scanning={uploadPhase === 'analysing'}>
+            <div className="absolute right-2 top-2 flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg bg-slate-800 ring-1 ring-slate-600">
+              {imgUrl ? (
+                <img ref={imgRef} src={imgUrl} alt="uploaded item" crossOrigin="anonymous" className="h-full w-full object-contain" />
+              ) : (
+                <span className="px-1 text-center text-[10px] text-slate-400">🖼️ upload</span>
+              )}
+            </div>
+          </BinBackdrop>
 
           <input ref={fileRef} type="file" accept="image/*" onChange={onFile} className="hidden" />
           <div className="flex gap-2">
