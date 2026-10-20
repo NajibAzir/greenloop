@@ -46,3 +46,10 @@ export function useAccount() {
   const { state } = useStore()
   return state.accounts[state.accountType]
 }
+
+// The profile of the currently logged-in role.
+export function useProfile() {
+  const { state } = useStore()
+  const role = state.auth?.role
+  return role ? state.profiles[role] : null
+}
