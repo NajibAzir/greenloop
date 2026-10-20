@@ -34,6 +34,8 @@ export default function SmartBin({ hub, onBack }) {
   const timers = useRef([])
   const dataHubId = hub.dataHubId || 'hub-a'
   const code = hub.code || 'ELM-014'
+  const isAuto = hub.type === 'auto'
+  const [auto, setAuto] = useState(false) // auto-simulation running
 
   // session state
   const [fills, setFills] = useState([34, 12, 52]) // bay fill %
@@ -59,6 +61,55 @@ export default function SmartBin({ hub, onBack }) {
   const later = (fn, ms) => { const id = setTimeout(fn, ms); timers.current.push(id); return id }
 
   const full = fills.some((v) => v >= 80)
+
+  // Latest-value refs so the auto-sim loop never acts on stale state.
+  const ref = useRef({})
+  ref.current = { linked, busy, connecting, scanQR, drop, cheat, endSession, sessTk }
+
+  // Auto-simulation: link a resident, drop a few random items (with the odd
+  // cheat attempt), then end the session — on repeat. Hands-free "any situation".
+  useEffect(() => {
+    if (!auto) return
+    let stop = false
+    let dropsThisSession = 0
+    const tick = () => {
+      if (stop) return
+      const s = ref.current
+      let delay = 1800
+      if (s.busy || s.connecting) {
+        delay = 700
+      } else if (!s.linked) {
+        s.scanQR()
+        dropsThisSession = 0
+        delay = 1800
+      } else if (dropsThisSession >= 4 + Math.floor(Math.random() * 3)) {
+        s.endSession()
+        delay = 1500
+      } else {
+        // 20% chance to try a cheat, else drop a valid AI-stream item.
+        if (Math.random() < 0.2) {
+          s.cheat(CHEATS[Math.floor(Math.random() * CHEATS.length)])
+        } else {
+          const valid = ITEMS.filter((it) => !it.human)
+          s.drop(valid[Math.floor(Math.random() * valid.length)])
+        }
+        dropsThisSession += 1
+        delay = 2600
+      }
+      const id = setTimeout(tick, delay)
+      timers.current.push(id)
+    }
+    const id = setTimeout(tick, 600)
+    timers.current.push(id)
+    return () => { stop = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auto])
+
+  // Auto hubs start simulating as soon as the console opens.
+  useEffect(() => {
+    if (isAuto) setAuto(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function addLog(d, c, w, r, k) {
     setLog((L) => [
@@ -214,9 +265,21 @@ export default function SmartBin({ hub, onBack }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button variant="secondary" onClick={onBack}>← Back to hub grid</Button>
-        <div className="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold">
-          <button onClick={() => setDark(true)} className={`rounded-md px-3 py-1.5 ${dark ? 'bg-slate-900 text-amber-300 shadow-sm' : 'text-slate-500'}`}>🌙 Dark amber</button>
-          <button onClick={() => setDark(false)} className={`rounded-md px-3 py-1.5 ${!dark ? 'bg-white text-green-700 shadow-sm' : 'text-slate-500'}`}>☀️ Light green</button>
+        <div className="flex items-center gap-2">
+          {isAuto && (
+            <button
+              onClick={() => setAuto((a) => !a)}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold ring-1 ${
+                auto ? 'bg-sky-600 text-white ring-sky-600' : 'bg-white text-sky-700 ring-sky-300'
+              }`}
+            >
+              {auto ? '⏸ Pause simulation' : '▶ Run simulation'}
+            </button>
+          )}
+          <div className="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold">
+            <button onClick={() => setDark(true)} className={`rounded-md px-3 py-1.5 ${dark ? 'bg-slate-900 text-amber-300 shadow-sm' : 'text-slate-500'}`}>🌙 Dark amber</button>
+            <button onClick={() => setDark(false)} className={`rounded-md px-3 py-1.5 ${!dark ? 'bg-white text-green-700 shadow-sm' : 'text-slate-500'}`}>☀️ Light green</button>
+          </div>
         </div>
       </div>
 
@@ -226,8 +289,8 @@ export default function SmartBin({ hub, onBack }) {
           Scan the station QR to link your phone, then drop items. Tokens land in your app instantly. · Hub {code}
         </p>
 
-        {/* Isometric bin */}
-        <div className="my-3">
+        {/* Isometric bin — capped so it doesn't dominate the console */}
+        <div className="mx-auto my-2 max-w-[560px]">
           <BinSvg fills={fills} open={open} scan={scan} c2={c2} linked={linked} connecting={connecting}
             flag={flag} alert={alert} pulse={pulse} tk={sessTk} resident={RESIDENT} code={code} dark={dark} />
         </div>

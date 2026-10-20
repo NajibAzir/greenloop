@@ -4,6 +4,8 @@ import {
   HOME_HUB_ID,
   initialHubLoads,
   ACCOUNT_TYPES,
+  REGISTERED_HUBS,
+  COLLECTION_HUBS,
 } from '../data/catalog.js'
 
 export const STORAGE_KEY = 'greenloop-state-v2'
@@ -48,6 +50,7 @@ export function initialState() {
       tenant: emptyAccount('tenant'),
     },
     profiles: defaultProfiles(),
+    registeredHubs: REGISTERED_HUBS.map((h) => ({ ...h })), // Smart-Bin network
     // Township-wide operations data (independent of the active persona):
     opsTransactions: [], // feeds Diversion Metrics + Financial Ledger
     hubLoads: initialHubLoads(), // live bin levels for the dispatch sim seed
@@ -174,6 +177,22 @@ export function reducer(state, action) {
       }
     }
 
+    case 'REGISTER_HUB': {
+      const list = state.registeredHubs || []
+      const n = list.length + 1
+      const code = `HUB-${String(n).padStart(4, '0')}`
+      // Round-robin a data hub so the new hub's drops feed a real bin's metrics.
+      const dataHubId = COLLECTION_HUBS[(n - 1) % COLLECTION_HUBS.length].id
+      const hub = {
+        code,
+        name: action.name || `New Hub ${n}`,
+        address: action.address || 'Township',
+        type: 'auto',
+        dataHubId,
+      }
+      return { ...state, registeredHubs: [...list, hub] }
+    }
+
     case 'SEED': {
       // Township operations throughput (ledger/metrics) + a modest per-account
       // starting balance/history so both personas look populated.
@@ -183,6 +202,7 @@ export function reducer(state, action) {
         ...base,
         accountType: state.accountType,
         profiles: state.profiles,
+        registeredHubs: state.registeredHubs,
         opsTransactions: txs,
         accounts: {
           residence: seedAccount('residence', action.residenceTx || []),
@@ -192,7 +212,12 @@ export function reducer(state, action) {
     }
 
     case 'RESET':
-      return { ...initialState(), accountType: state.accountType, profiles: state.profiles }
+      return {
+        ...initialState(),
+        accountType: state.accountType,
+        profiles: state.profiles,
+        registeredHubs: state.registeredHubs,
+      }
 
     case 'HYDRATE':
       return { ...initialState(), ...action.state }

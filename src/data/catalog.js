@@ -246,6 +246,18 @@ export function getHub(hubId) {
   return HUBS.find((h) => h.id === hubId) || null
 }
 
+// ---------------------------------------------------------------------------
+// Registered Smart-Bin hubs shown in the Operations "Recycle Hub" grid.
+// `type`: 'manual' (click-driven demo) or 'auto' (runs situations on its own).
+// `dataHubId` ties a hub to a COLLECTION_HUBS id so its drops feed metrics.
+// ---------------------------------------------------------------------------
+export const REGISTERED_HUBS = [
+  { code: 'HUB-0001', name: 'Elmina Central Hub', address: 'Jalan Elmina Barat 1, City of Elmina', type: 'manual', dataHubId: 'hub-a' },
+  { code: 'HUB-0002', name: 'Elmina Lakeside Hub', address: 'Persiaran Elmina Lakeside, City of Elmina', type: 'auto', dataHubId: 'hub-c' },
+  { code: 'HUB-0003', name: 'Bandar Bukit Raja Mall Hub', address: 'Jalan Bukit Raja 4, Bandar Bukit Raja', type: 'auto', dataHubId: 'hub-f' },
+  { code: 'HUB-0004', name: 'Saujana Utama Hub', address: 'Jalan Saujana 2, Saujana Utama', type: 'auto', dataHubId: 'hub-b' },
+]
+
 // Build the initial per-hub load (kg) from each hub's starting fill fraction.
 export function initialHubLoads() {
   const loads = {}
