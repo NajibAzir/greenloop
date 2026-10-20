@@ -21,9 +21,9 @@ const SPEEDS = [
 const TICK_MS = 250 // real ms per sim tick
 
 function fillText(fill) {
-  if (fill >= PICKUP_THRESHOLD) return 'text-red-600'
+  if (fill >= PICKUP_THRESHOLD) return 'gl-num-neg text-red-600'
   if (fill >= 0.5) return 'text-amber-600'
-  return 'text-green-600'
+  return 'gl-num-pos text-green-600'
 }
 
 export default function LiveLogistics() {
@@ -259,7 +259,7 @@ export default function LiveLogistics() {
                           Needs pickup
                         </span>
                       ) : (
-                        <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold leading-tight text-green-700">
+                        <span className="gl-badge-pos inline-block rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold leading-tight text-green-700">
                           Healthy
                         </span>
                       )}
@@ -366,7 +366,7 @@ function FleetBoard({ it, clock }) {
                   )}
                 </td>
                 <td className="px-3 py-2 tabular-nums text-slate-600">{fmtClock(leg.depart)}</td>
-                <td className={`px-3 py-2 tabular-nums ${legDone ? 'text-green-600' : 'text-slate-600'}`}>
+                <td className={`px-3 py-2 tabular-nums ${legDone ? 'gl-num-pos text-green-600' : 'text-slate-600'}`}>
                   {fmtClock(leg.arrive)} {legDone ? '✓' : ''}
                 </td>
                 <td className="px-4 py-2 tabular-nums text-slate-500">{leg.loadKg} kg</td>

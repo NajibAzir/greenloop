@@ -1,5 +1,5 @@
 export const THEME_STORAGE_KEY = 'greenloop-theme'
-export const DEFAULT_THEME_ID = 'simedarby'
+export const DEFAULT_THEME_ID = 'emerald'
 
 export const GREEN_THEMES = [
   {

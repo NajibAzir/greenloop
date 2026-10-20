@@ -178,7 +178,7 @@ function ScanAndDropoff() {
                         />
                         <span className="text-[11px] text-slate-400">/ max {capFor(item.id)}</span>
                       </label>
-                      <span className="text-xs font-semibold text-green-600">
+                      <span className="gl-num-pos text-xs font-semibold text-green-600">
                         +{formatGP(preview.tokensAwarded)}
                       </span>
                     </div>
@@ -192,7 +192,7 @@ function ScanAndDropoff() {
               </p>
               <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
                 <span>Total reward</span>
-                <span className="font-bold text-green-600">+{formatGP(totalGP)}</span>
+                <span className="gl-num-pos font-bold text-green-600">+{formatGP(totalGP)}</span>
               </div>
               <Button onClick={handleDrop} disabled={!hasValid} className="w-full">
                 ♻️ Drop {previews.length > 1 ? 'all at Smart Hub' : 'at Smart Hub'}
@@ -201,8 +201,8 @@ function ScanAndDropoff() {
           )}
 
           {result && (
-            <div className="animate-fade-slide rounded-xl bg-green-50 p-4 ring-1 ring-green-200">
-              <p className="text-sm font-semibold text-green-800">
+            <div className="gl-box-pos animate-fade-slide rounded-xl bg-green-50 p-4 ring-1 ring-green-200">
+              <p className="gl-num-pos text-sm font-semibold text-green-800">
                 ✅ Drop-off confirmed at {result.hubName} — {result.lines.length} material
                 {result.lines.length > 1 ? 's' : ''} graded
               </p>
@@ -216,7 +216,7 @@ function ScanAndDropoff() {
                   <p className="text-xs text-slate-500">weight</p>
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-green-600">+{result.totalGP}</p>
+                  <p className="gl-num-pos text-lg font-bold text-green-600">+{result.totalGP}</p>
                   <p className="text-xs text-slate-500">GP</p>
                 </div>
               </div>
@@ -278,7 +278,7 @@ function ScanAndDropoff() {
                   <span>{it.emoji}</span>
                   <CategoryBadge category={it.category} />
                 </span>
-                <span className="text-xs font-semibold text-green-600">{it.gpPerKg} GP/kg</span>
+                <span className="gl-num-pos text-xs font-semibold text-green-600">{it.gpPerKg} GP/kg</span>
               </div>
             ))}
           </div>
@@ -428,7 +428,7 @@ function OffsetFee() {
         <div className="px-5 py-4">
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="font-medium text-slate-700">Offset so far</span>
-            <span className="font-bold text-green-600">{formatRm(account.feeOffsetRm)}</span>
+            <span className="gl-num-pos font-bold text-green-600">{formatRm(account.feeOffsetRm)}</span>
           </div>
           <div className="h-4 w-full overflow-hidden rounded-full bg-slate-100">
             <div
@@ -491,7 +491,7 @@ function OffsetFee() {
             </div>
             <div className="mt-3 flex items-center justify-between">
               <p className="text-sm text-slate-600">
-                Applies <span className="font-semibold text-green-600">{formatRm(applyRm)}</span> to your fee
+                Applies <span className="gl-num-pos font-semibold text-green-600">{formatRm(applyRm)}</span> to your fee
               </p>
               <Button disabled={!canApply} onClick={apply}>
                 Apply to fee
@@ -571,7 +571,7 @@ function MyActivity() {
                   <p className="truncate text-xs text-slate-500">{e.detail}</p>
                 </div>
                 <div className="text-right">
-                  <p className={`text-sm font-semibold ${e.positive ? 'text-green-600' : 'text-slate-500'}`}>
+                  <p className={`text-sm font-semibold ${e.positive ? 'gl-num-pos text-green-600' : 'gl-num-neg text-red-600'}`}>
                     {e.amount}
                   </p>
                   <p className="text-xs text-slate-400">{fmtTime(e.ts)}</p>

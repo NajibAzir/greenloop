@@ -26,7 +26,7 @@ function initColorMode() {
   } catch {
     // ignore
   }
-  return 'dark'
+  return 'light'
 }
 
 function initThemeId() {

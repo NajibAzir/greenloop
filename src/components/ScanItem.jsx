@@ -1,30 +1,40 @@
 import { useRef, useState } from 'react'
 import { SCAN_TARGETS } from '../data/catalog.js'
+import { useTheme } from '../store/StoreContext.jsx'
 import { Button } from './ui.jsx'
 import ItemImage from './ItemImage.jsx'
 import BinSvg from './BinSvg.jsx'
 import { MIN_SCORE, loadModel, toDetection } from '../lib/vision.js'
 
 // A small, static Smart Bin graphic shown as the scan viewport backdrop so the
-// resident sees the bin they're feeding while an item is analysed.
-function BinBackdrop({ children, scanning }) {
+// resident sees the bin they're feeding while an item is analysed. Follows the
+// app's global color mode (dark-amber vs light-green) — no separate toggle.
+function BinBackdrop({ children, scanning, dark }) {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-700">
-      <BinSvg
-        fills={[43, 12, 52]}
-        open={-1}
-        scan={scanning ? 0 : -1}
-        c2={-1}
-        linked
-        connecting={false}
-        flag={false}
-        alert={false}
-        pulse={false}
-        tk={0}
-        resident="You"
-        code="HUB-0001"
-        dark
-      />
+    <div
+      className={`relative overflow-hidden rounded-xl ring-1 ${
+        dark ? 'bg-slate-900 ring-slate-700' : 'bg-white ring-slate-200'
+      }`}
+    >
+      {/* Center the isometric bin. The artwork sits a touch right-of-center
+          inside its viewBox, so nudge it left slightly to visually center it. */}
+      <div className="mx-auto w-full max-w-[460px] px-2 [&>svg]:-translate-x-[6%]">
+        <BinSvg
+          fills={[43, 12, 52]}
+          open={-1}
+          scan={scanning ? 0 : -1}
+          c2={-1}
+          linked
+          connecting={false}
+          flag={false}
+          alert={false}
+          pulse={false}
+          tk={0}
+          resident="You"
+          code="HUB-0001"
+          dark={dark}
+        />
+      </div>
       {children}
     </div>
   )
@@ -35,6 +45,8 @@ function BinBackdrop({ children, scanning }) {
 //  - Upload: upload a real image; it is classified for real with COCO-SSD.
 // Only recyclable results unlock drop-off (handled by parent via onAccepted).
 export default function ScanItem({ onAccepted }) {
+  const { colorMode } = useTheme()
+  const dark = colorMode === 'dark'
   const [source, setSource] = useState('example') // 'example' | 'upload'
 
   // --- Example mode state ---
@@ -173,8 +185,8 @@ export default function ScanItem({ onAccepted }) {
           </div>
 
           {/* Smart Bin viewport — the selected item is shown in a small inset */}
-          <BinBackdrop scanning={phase === 'scanning'}>
-            <div className="absolute right-2 top-2 h-20 w-20 overflow-hidden rounded-lg bg-slate-800 ring-1 ring-slate-600">
+          <BinBackdrop scanning={phase === 'scanning'} dark={dark}>
+            <div className={`absolute right-2 top-2 h-20 w-20 overflow-hidden rounded-lg ring-1 ${dark ? 'bg-slate-800 ring-slate-600' : 'bg-slate-100 ring-slate-300'}`}>
               <ItemImage id={targetId} className="h-full w-full" />
               {phase !== 'idle' && (
                 <span
@@ -194,11 +206,11 @@ export default function ScanItem({ onAccepted }) {
           {phase === 'done' && result && (
             <div
               className={`animate-fade-slide rounded-xl p-4 ring-1 ${
-                result.recyclable ? 'bg-green-50 ring-green-200' : 'bg-red-50 ring-red-200'
+                result.recyclable ? 'gl-box-pos bg-green-50 ring-green-200' : 'bg-red-50 ring-red-200'
               }`}
             >
               {result.recyclable ? (
-                <p className="text-sm font-semibold text-green-800">
+                <p className="gl-num-pos text-sm font-semibold text-green-800">
                   ✅ Recyclable — you can drop this at the Smart Hub.
                 </p>
               ) : (
@@ -213,8 +225,8 @@ export default function ScanItem({ onAccepted }) {
       ) : (
         <>
           {/* Smart Bin viewport — the uploaded photo is shown in a small inset */}
-          <BinBackdrop scanning={uploadPhase === 'analysing'}>
-            <div className="absolute right-2 top-2 flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg bg-slate-800 ring-1 ring-slate-600">
+          <BinBackdrop scanning={uploadPhase === 'analysing'} dark={dark}>
+            <div className={`absolute right-2 top-2 flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg ring-1 ${dark ? 'bg-slate-800 ring-slate-600' : 'bg-slate-100 ring-slate-300'}`}>
               {imgUrl ? (
                 <img ref={imgRef} src={imgUrl} alt="uploaded item" crossOrigin="anonymous" className="h-full w-full object-contain" />
               ) : (
@@ -248,7 +260,7 @@ export default function ScanItem({ onAccepted }) {
                   <div className="mb-2 flex items-center justify-between text-xs text-slate-500">
                     <span>Detected objects</span>
                     <span>
-                      <span className="text-green-600">{uploadRecyclable} recyclable</span>
+                      <span className="gl-num-pos text-green-600">{uploadRecyclable} recyclable</span>
                       {' · '}
                       <span className="text-red-500">{uploadReject} rejected</span>
                     </span>
@@ -266,7 +278,7 @@ export default function ScanItem({ onAccepted }) {
                         </span>
                         <span
                           className={`text-xs font-semibold ${
-                            d.recyclable ? 'text-green-600' : 'text-red-500'
+                            d.recyclable ? 'gl-num-pos text-green-600' : 'gl-num-neg text-red-500'
                           }`}
                         >
                           {d.recyclable ? 'recyclable' : 'not accepted'}

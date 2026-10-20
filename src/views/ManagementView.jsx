@@ -351,7 +351,7 @@ function DiversionMetrics() {
 }
 
 // -------------------------------------------------------------------------
-// Financial Ledger page — ROI dashboard + forecast
+// Hub Economics page — indicative ROI / business-case model + forecast
 // -------------------------------------------------------------------------
 const HORIZONS = [
   { months: 3, label: 'Next 3 months' },
@@ -384,6 +384,12 @@ function FinancialLedger() {
 
   return (
     <div className="space-y-5">
+      {/* Honest framing: this is a business-case model, not a bookkeeping ledger */}
+      <div className="rounded-xl bg-slate-50 px-4 py-2.5 text-xs text-slate-500 ring-1 ring-slate-200">
+        ℹ️ Indicative ROI model for the hub's business case — not audited financials. Figures are derived from
+        diversion volume and Malaysian cost/price benchmarks, and update live as drop-offs are recorded.
+      </div>
+
       {/* Headline ROI stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat

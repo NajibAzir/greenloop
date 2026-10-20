@@ -18,15 +18,15 @@ export default function HubSession({ pairedHub, onPaired, onEnd }) {
 
   if (pairedHub) {
     return (
-      <Card className="bg-green-50 ring-green-200">
+      <Card className="gl-box-pos bg-green-50 ring-green-200">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
           <div className="flex items-center gap-3">
             <span className="text-2xl">✅</span>
             <div>
-              <p className="text-sm font-semibold text-green-800">
+              <p className="gl-num-pos text-sm font-semibold text-green-800">
                 Paired with {pairedHub.name}
               </p>
-              <p className="text-xs text-green-600">
+              <p className="gl-num-pos text-xs text-green-600">
                 Recycling session active — your drop-offs are logged to this hub.
               </p>
             </div>

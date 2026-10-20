@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useStore } from '../store/StoreContext.jsx'
+import { useStore, useTheme } from '../store/StoreContext.jsx'
 import { Button } from './ui.jsx'
 import BinSvg from './BinSvg.jsx'
 
@@ -30,7 +30,10 @@ const RESIDENT = 'Aisyah R.'
 
 export default function SmartBin({ hub, onBack }) {
   const { dispatch } = useStore()
-  const [dark, setDark] = useState(true) // theme: dark amber (default) | light green
+  // The Smart Bin follows the app's global color mode — no separate toggle.
+  // Dark mode keeps the amber station look; light mode uses the green look.
+  const { colorMode } = useTheme()
+  const dark = colorMode === 'dark'
   const timers = useRef([])
   const dataHubId = hub.dataHubId || 'hub-elmina-west'
   const code = hub.code || 'ELM-01'
@@ -276,10 +279,6 @@ export default function SmartBin({ hub, onBack }) {
               {auto ? '⏸ Pause simulation' : '▶ Run simulation'}
             </button>
           )}
-          <div className="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold">
-            <button onClick={() => setDark(true)} className={`rounded-md px-3 py-1.5 ${dark ? 'bg-slate-900 text-amber-300 shadow-sm' : 'text-slate-500'}`}>🌙 Dark amber</button>
-            <button onClick={() => setDark(false)} className={`rounded-md px-3 py-1.5 ${!dark ? 'bg-white text-green-700 shadow-sm' : 'text-slate-500'}`}>☀️ Light green</button>
-          </div>
         </div>
       </div>
 
@@ -307,7 +306,7 @@ export default function SmartBin({ hub, onBack }) {
                 </>
               ) : (
                 <>
-                  <p className={dark ? 'text-[#4be08a]' : 'text-green-600'}>● Linked to {code}</p>
+                  <p className={dark ? 'text-[#4be08a]' : 'gl-num-pos text-green-600'}>● Linked to {code}</p>
                   <p className={`text-xs ${T.mute}`}>{RESIDENT} · City of Elmina</p>
                   <div className="mt-2 flex items-end justify-between">
                     <div>
@@ -322,7 +321,7 @@ export default function SmartBin({ hub, onBack }) {
                     feed.map((e, i) => (
                       <div key={i} className={`flex items-center justify-between border-b py-1.5 text-sm ${dark ? 'border-[#3b4656]' : 'border-slate-100'}`}>
                         <span>{e.n}</span>
-                        <b className={dark ? 'text-[#4be08a]' : 'text-green-600'}>+{e.t}</b>
+                        <b className={dark ? 'text-[#4be08a]' : 'gl-num-pos text-green-600'}>+{e.t}</b>
                       </div>
                     ))
                   )}
@@ -407,7 +406,7 @@ export default function SmartBin({ hub, onBack }) {
                           <td className="py-1.5 pr-3">{l.c}</td>
                           <td className="py-1.5 pr-3">{l.w}</td>
                           <td className="py-1.5">
-                            <span className={`font-bold ${l.r === 'APPROVED' ? (dark ? 'text-[#4be08a]' : 'text-green-600') : 'text-red-500'}`}>{l.r}</span> {l.k}
+                            <span className={`font-bold ${l.r === 'APPROVED' ? (dark ? 'text-[#4be08a]' : 'gl-num-pos text-green-600') : 'gl-num-neg text-red-500'}`}>{l.r}</span> {l.k}
                           </td>
                         </tr>
                       ))

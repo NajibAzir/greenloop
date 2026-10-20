@@ -78,32 +78,42 @@ export function forecast(transactions, months = 12) {
   const base = computeRoi(transactions)
   const g = 1 + ECONOMICS.monthlyGrowthRate
   const { year: ny, month: nm } = nowParts()
-  const rows = []
-  let cumulativeNet = -ECONOMICS.hubCapex // start in the hole by the setup cost
 
-  for (let m = 1; m <= months; m++) {
-    // Calendar month this projection step lands on.
+  // One projected month, m = 1, 2, 3, ... from now.
+  function monthRow(m, cumulativeNet) {
     const calMonth = (nm + m) % 12
     const season = MALAYSIA_SEASONALITY[calMonth] / MALAYSIA_SEASONALITY[nm]
     const trend = g ** (m - 1)
     const scale = trend * season * (1 + wobble(ny * 12 + nm + m))
     const benefit = round(base.totalBenefit * scale)
-    // Opex is fixed; GP redemption scales with volume.
-    const cost = round(base.opex + base.gpRedeemedRm * scale)
+    const cost = round(base.opex + base.gpRedeemedRm * scale) // opex fixed; GP scales
     const net = round(benefit - cost)
-    cumulativeNet = round(cumulativeNet + net)
-    rows.push({
-      month: m,
-      label: `M${m}`,
-      benefit,
-      cost,
-      net,
-      cumulative: cumulativeNet,
-    })
+    const cumulative = round(cumulativeNet + net)
+    return { month: m, label: `M${m}`, benefit, cost, net, cumulative }
   }
 
-  // First month where cumulative turns positive = payback point.
-  const paybackMonth = rows.find((r) => r.cumulative >= 0)?.month ?? null
+  // Break-even is a FIXED property of the hub, so always search a long horizon
+  // (independent of the selected chart range). Otherwise picking "Next 3 months"
+  // would hide a payback that happens in month 5 and show a different number.
+  const PAYBACK_SCAN = 120 // months (10 years) — generous upper bound
+  let cum = -ECONOMICS.hubCapex // start in the hole by the one-time setup cost
+  let paybackMonth = null
+  for (let m = 1; m <= PAYBACK_SCAN; m++) {
+    cum = monthRow(m, cum).cumulative
+    if (cum >= 0) {
+      paybackMonth = m
+      break
+    }
+  }
+
+  // Chart rows limited to the selected horizon (same underlying curve).
+  const rows = []
+  let cumulativeNet = -ECONOMICS.hubCapex
+  for (let m = 1; m <= months; m++) {
+    const row = monthRow(m, cumulativeNet)
+    cumulativeNet = row.cumulative
+    rows.push(row)
+  }
 
   return {
     rows,

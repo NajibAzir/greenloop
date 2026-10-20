@@ -75,9 +75,10 @@ Property community rather than a made-up map.
   Malaysian seasonal pattern (Hari Raya spike, monsoon dip), a hub contribution
   ranking, and an optional dashed projection that is always kept visually separate
   from actual data. The future is left empty; the app never invents data past today.
-- **💰 Financial Ledger:** the ROI story. Avoided haulage, commodity sales and
-  carbon value, minus operating cost and only the GP residents **actually redeem**
-  (unredeemed GP is shown as an outstanding liability). Net surplus, ROI %, CapEx
+- **💰 Hub Economics:** the ROI and business-case story (an indicative model, not
+  audited financials). Avoided haulage, commodity sales and carbon value, minus
+  operating cost and only the GP residents **actually redeem** (unredeemed GP is
+  shown as an outstanding liability). Net surplus, ROI %, CapEx
   payback, and a 3, 12 or 24 month forecast with realistic ups and downs.
 - **🚛 Logistics & Dispatch:** a live simulation. A Play/Pause clock (0.5× to 10×)
   advances the day, bins fill in real time, and at **80%** the AI auto-schedules a
@@ -113,7 +114,7 @@ Property community rather than a made-up map.
 4. Switch to **Developer Operations** (top of the sidebar):
    - **Diversion Metrics:** toggle **Show projection** and switch Monthly/Annual;
      note the future stays empty and the pattern has seasonal ups and downs.
-   - **Financial Ledger:** see how the hub turns a surplus and pays back its setup.
+   - **Hub Economics:** see how the hub turns a surplus and pays back its setup.
    - **Logistics & Dispatch:** press **Play**, speed up to 10×, and watch bins fill
      and trucks auto-dispatch along real roads.
    - **Recycle Hub:** open **Elmina West Hub** and try to cheat the Smart Bin.
@@ -129,7 +130,7 @@ Property community rather than a made-up map.
 | Ops, Diversion Metrics | ![Diversion Metrics](docs/screenshots/ops-metrics.png) |
 | Ops, Diversion (projection on) | ![Diversion projection](docs/screenshots/ops-metrics-projection.png) |
 | Ops, Hub Stat | ![Hub Stat](docs/screenshots/ops-hubstat.png) |
-| Ops, Financial Ledger | ![Financial Ledger](docs/screenshots/ops-ledger.png) |
+| Ops, Hub Economics | ![Hub Economics](docs/screenshots/ops-ledger.png) |
 | Ops, Logistics & Dispatch | ![Logistics & Dispatch](docs/screenshots/ops-logistics.png) |
 | Ops, Recycle Hub network | ![Recycle Hub grid](docs/screenshots/hub-grid.png) |
 | Ops, Smart Bin (dark) | ![Smart Bin dark](docs/screenshots/recyclehub-dark.png) |
