@@ -11,24 +11,24 @@ import { COLLECTION_HUBS } from '../data/catalog.js'
 // [itemId, quantity, hubId]
 const SEED_PLAN = [
   // PET bottles — high count, township-wide (~0.03 kg each)
-  ['pet-bottle', 42000, 'hub-a'],
-  ['pet-bottle', 31000, 'hub-b'],
-  ['pet-bottle', 24000, 'hub-d'],
+  ['pet-bottle', 42000, 'hub-elmina-west'],
+  ['pet-bottle', 31000, 'hub-bukit-raja'],
+  ['pet-bottle', 24000, 'hub-denai-alam'],
   // Aluminium cans (~0.015 kg each) — the high-value stream
-  ['aluminum-can', 28000, 'hub-a'],
-  ['aluminum-can', 15000, 'hub-c'],
-  ['aluminum-can', 9000, 'hub-e'],
+  ['aluminum-can', 28000, 'hub-elmina-west'],
+  ['aluminum-can', 15000, 'hub-lakeside-mall'],
+  ['aluminum-can', 9000, 'hub-bukit-subang'],
   // Paper cartons
-  ['paper-carton', 14000, 'hub-a'],
-  ['paper-carton', 9000, 'hub-c'],
+  ['paper-carton', 14000, 'hub-elmina-west'],
+  ['paper-carton', 9000, 'hub-lakeside-mall'],
   // Cardboard (mall tenants + households, ~0.4 kg each)
-  ['cardboard-box', 4200, 'hub-b'],
-  ['cardboard-box', 5200, 'hub-f'],
+  ['cardboard-box', 4200, 'hub-elmina-east'],
+  ['cardboard-box', 5200, 'hub-lakeside-mall'],
   // E-waste (~0.25 kg each) — high value per kg
-  ['ewaste-small', 1100, 'hub-d'],
-  ['ewaste-small', 1400, 'hub-f'],
+  ['ewaste-small', 1100, 'hub-denai-alam'],
+  ['ewaste-small', 1400, 'hub-bukit-raja'],
   // Appliances (bulky, ~12 kg each)
-  ['appliance-microwave', 140, 'hub-f'],
+  ['appliance-microwave', 140, 'hub-bukit-raja'],
 ]
 
 const HUB_IDS = new Set(COLLECTION_HUBS.map((h) => h.id))

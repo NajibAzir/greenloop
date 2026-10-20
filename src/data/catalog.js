@@ -210,53 +210,87 @@ export function getScanTarget(id) {
 }
 
 // Mall-tenant vouchers residents can redeem with Green Points.
+// Vouchers residents redeem with Green Points, at real Sime Darby Property
+// retail: Elmina Lakeside Mall (City of Elmina), JUMPA (Denai Alam) and
+// KL East Mall (KL East). Values/costs are indicative demo figures.
 export const VOUCHERS = [
-  { id: 'cafe-10', name: 'Greenview Mall Café', value: 10, costTokens: 100, emoji: '☕' },
-  { id: 'fnb-25', name: 'Riverside F&B Credit', value: 25, costTokens: 240, emoji: '🍜' },
-  { id: 'grocery-50', name: 'Township Grocer Voucher', value: 50, costTokens: 460, emoji: '🛒' },
-  { id: 'cinema-15', name: 'Township Cineplex Ticket', value: 15, costTokens: 150, emoji: '🎬' },
+  { id: 'cafe-10', name: 'Elmina Lakeside Mall Café', value: 10, costTokens: 100, emoji: '☕' },
+  { id: 'fnb-25', name: 'JUMPA Food Court Credit', value: 25, costTokens: 240, emoji: '🍜' },
+  { id: 'grocery-50', name: 'KL East Mall Grocer Voucher', value: 50, costTokens: 460, emoji: '🛒' },
+  { id: 'cinema-15', name: 'KL East Mall Cineplex Ticket', value: 15, costTokens: 150, emoji: '🎬' },
 ]
 
 // ---------------------------------------------------------------------------
-// Collection hubs across the township (Greenview township area).
-// `fill` is the current fill fraction (0..1). `fillRate` is the simulated
-// fraction filled per hour, used to predict time-to-full for AI dispatch.
-// `capacityKg` is the physical bin capacity used to estimate collected load.
+// SINGLE SOURCE OF TRUTH for the Smart-Bin network.
+//
+// Every surface — Resident QR pairing, Logistics & Dispatch, Recycle Hub grid
+// and Hub Stat — reads the SAME hubs from here, so the count and names never
+// drift apart. Locations are real Sime Darby Property developments in the Klang
+// Valley (City of Elmina in Shah Alam/Sungai Buloh, Bandar Bukit Raja in Klang)
+// with approximate coordinates for the map.
+//
+// Per hub:
+//  - code        public Smart-Bin code shown in the UI
+//  - name        human-readable hub name (shared everywhere)
+//  - address     street + development
+//  - kind        'township' (residential precinct) | 'mall' (retail bin bank)
+//  - type        'manual' (click-driven demo) | 'auto' (self-running sim)
+//  - lat/lng     map position
+//  - fill        starting fill fraction (0..1)
+//  - fillRate    fraction filled per hour (drives time-to-full prediction)
+//  - capacityKg  physical bin-bank capacity
 // ---------------------------------------------------------------------------
-export const HUBS = [
-  { id: 'hub-a', name: 'Central Hub', lat: 3.1725, lng: 101.5035, fill: 0.45, fillRate: 0.06, capacityKg: 1200 },
-  { id: 'hub-b', name: 'Northgate Point', lat: 3.1962, lng: 101.5361, fill: 0.72, fillRate: 0.05, capacityKg: 900 },
-  { id: 'hub-c', name: 'Lakeside Node', lat: 3.1588, lng: 101.5497, fill: 0.34, fillRate: 0.03, capacityKg: 800 },
-  { id: 'hub-d', name: 'West Hub', lat: 3.1521, lng: 101.4848, fill: 0.63, fillRate: 0.04, capacityKg: 1000 },
-  { id: 'hub-e', name: 'East Node', lat: 3.1844, lng: 101.5102, fill: 0.19, fillRate: 0.02, capacityKg: 700 },
-  { id: 'hub-f', name: 'Parkview Point', lat: 3.1402, lng: 101.5240, fill: 0.81, fillRate: 0.055, capacityKg: 950 },
-  { id: 'hub-depot', name: 'Collection Depot', lat: 3.1668, lng: 101.5215, fill: 0, fillRate: 0, capacityKg: 0, isDepot: true },
+export const SMART_HUBS = [
+  { id: 'hub-elmina-west', code: 'ELM-01', name: 'Elmina West Hub', address: 'Jalan Elmina Barat, Elmina West · City of Elmina', kind: 'township', type: 'manual', lat: 3.2089, lng: 101.5236, fill: 0.45, fillRate: 0.06, capacityKg: 1200 },
+  { id: 'hub-elmina-east', code: 'ELM-02', name: 'Elmina East Hub', address: 'Persiaran Elmina Timur, Elmina East · City of Elmina', kind: 'township', type: 'auto', lat: 3.2201, lng: 101.5472, fill: 0.72, fillRate: 0.05, capacityKg: 900 },
+  { id: 'hub-lakeside-mall', code: 'ELM-03', name: 'Elmina Lakeside Mall Hub', address: 'Elmina Lakeside Mall · City of Elmina', kind: 'mall', type: 'auto', lat: 3.2156, lng: 101.5361, fill: 0.34, fillRate: 0.045, capacityKg: 1400 },
+  { id: 'hub-denai-alam', code: 'DNA-01', name: 'Denai Alam Hub', address: 'Jalan Denai Alam, Denai Alam · City of Elmina', kind: 'township', type: 'auto', lat: 3.1976, lng: 101.5118, fill: 0.63, fillRate: 0.04, capacityKg: 1000 },
+  { id: 'hub-bukit-subang', code: 'BSB-01', name: 'Bukit Subang Hub', address: 'Jalan Bukit Subang, Bukit Subang · City of Elmina', kind: 'township', type: 'auto', lat: 3.1888, lng: 101.5389, fill: 0.19, fillRate: 0.03, capacityKg: 700 },
+  { id: 'hub-bukit-raja', code: 'BBR-01', name: 'Bandar Bukit Raja Hub', address: 'Jalan Bukit Raja, Bandar Bukit Raja · Klang', kind: 'township', type: 'auto', lat: 3.0894, lng: 101.4447, fill: 0.81, fillRate: 0.055, capacityKg: 950 },
 ]
+
+// The collection depot (fleet start/end) — Elmina Business Park.
+export const DEPOT = {
+  id: 'hub-depot',
+  name: 'Elmina Business Park Depot',
+  lat: 3.2042,
+  lng: 101.5305,
+  fill: 0,
+  fillRate: 0,
+  capacityKg: 0,
+  isDepot: true,
+}
+
+// Combined list (collection hubs + depot) for the dispatch/map code.
+export const HUBS = [...SMART_HUBS, DEPOT]
 
 // Hub is flagged for pickup when its fill reaches this fraction.
 export const PICKUP_THRESHOLD = 0.8
 
 // The resident's local hub — their drop-offs fill this hub's bin.
-export const HOME_HUB_ID = 'hub-a'
+export const HOME_HUB_ID = 'hub-elmina-west'
 
 // Collection hubs excluding the depot.
-export const COLLECTION_HUBS = HUBS.filter((h) => !h.isDepot)
+export const COLLECTION_HUBS = SMART_HUBS
 
 export function getHub(hubId) {
   return HUBS.find((h) => h.id === hubId) || null
 }
 
 // ---------------------------------------------------------------------------
-// Registered Smart-Bin hubs shown in the Operations "Recycle Hub" grid.
-// `type`: 'manual' (click-driven demo) or 'auto' (runs situations on its own).
-// `dataHubId` ties a hub to a COLLECTION_HUBS id so its drops feed metrics.
+// Registered Smart-Bin hubs for the Operations "Recycle Hub" grid + Hub Stat.
+// DERIVED from SMART_HUBS so the count and names are always in sync with the
+// Logistics map and the Resident QR grid. `dataHubId` ties each registered hub
+// to its collection-hub id so its drops feed the right bin's metrics.
 // ---------------------------------------------------------------------------
-export const REGISTERED_HUBS = [
-  { code: 'HUB-0001', name: 'Elmina Central Hub', address: 'Jalan Elmina Barat 1, City of Elmina', type: 'manual', dataHubId: 'hub-a' },
-  { code: 'HUB-0002', name: 'Elmina Lakeside Hub', address: 'Persiaran Elmina Lakeside, City of Elmina', type: 'auto', dataHubId: 'hub-c' },
-  { code: 'HUB-0003', name: 'Bandar Bukit Raja Mall Hub', address: 'Jalan Bukit Raja 4, Bandar Bukit Raja', type: 'auto', dataHubId: 'hub-f' },
-  { code: 'HUB-0004', name: 'Saujana Utama Hub', address: 'Jalan Saujana 2, Saujana Utama', type: 'auto', dataHubId: 'hub-b' },
-]
+export const REGISTERED_HUBS = SMART_HUBS.map((h) => ({
+  code: h.code,
+  name: h.name,
+  address: h.address,
+  kind: h.kind,
+  type: h.type,
+  dataHubId: h.id,
+}))
 
 // Build the initial per-hub load (kg) from each hub's starting fill fraction.
 export function initialHubLoads() {
@@ -353,7 +387,7 @@ export const ACCOUNT_TYPES = {
     id: 'residence',
     label: 'Residence',
     icon: '🏠',
-    account: 'Greenview Residence · A-12-3',
+    account: 'Elmina West · Jalan Elmina 3/2A',
     feeLabel: 'Township Maintenance Fee',
     feeShort: 'maintenance fee',
     feeAmount: DEFAULT_MAINTENANCE_FEE,
@@ -363,7 +397,7 @@ export const ACCOUNT_TYPES = {
     id: 'tenant',
     label: 'Mall Tenant',
     icon: '🏬',
-    account: 'Greenview Mall · Café Lot G-08',
+    account: 'Elmina Lakeside Mall · Lot G-08',
     feeLabel: 'Mall Service Charge',
     feeShort: 'service charge',
     feeAmount: 980, // commercial outlets pay a higher monthly service charge

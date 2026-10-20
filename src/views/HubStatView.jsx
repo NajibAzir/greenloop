@@ -14,12 +14,18 @@ import { aggregate, formatWeight, formatGP } from '../lib/engine.js'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-// Deterministic per-hub weight: split the township total across hubs by a fixed
-// share, so each hub has a stable, believable contribution.
-function hubShare(code, i, total) {
-  const shares = [0.274, 0.216, 0.343, 0.167] // sums ~1 for the 4 base hubs
-  const s = shares[i] ?? (0.1 + ((i * 37) % 20) / 100)
-  return total * s
+// Deterministic per-hub share of the township total. Shares are DERIVED from the
+// current hub count (not a fixed 4-element array) and always normalised to sum
+// to 1, so the numbers stay in sync no matter how many hubs are registered. A
+// fixed sine seed per index keeps each hub's share stable across renders.
+function hubWeights(count) {
+  if (count <= 0) return []
+  const raw = Array.from({ length: count }, (_, i) => {
+    const s = Math.sin((i + 1) * 12.9898) * 43758.5453
+    return 0.6 + (((s % 1) + 1) % 1) * 0.8 // 0.6..1.4 spread
+  })
+  const sum = raw.reduce((a, b) => a + b, 0)
+  return raw.map((r) => r / sum) // normalised, sums to 1
 }
 
 export default function HubStatView() {
@@ -27,50 +33,75 @@ export default function HubStatView() {
   const hubs = state.registeredHubs || []
   const [hubCode, setHubCode] = useState('all')
   const [gran, setGran] = useState('month') // day | month | year
-  const [monthIdx, setMonthIdx] = useState(new Date().getMonth())
-  const [year] = useState(new Date().getFullYear())
+  const now = new Date()
+  const nowMonth = now.getMonth()
+  const nowYear = now.getFullYear()
+  const nowDay = now.getDate()
+  const [monthIdx, setMonthIdx] = useState(nowMonth)
+  const [year] = useState(nowYear)
 
   const agg = useMemo(() => aggregate(state.opsTransactions), [state.opsTransactions])
   const baseKg = agg.totalWeight || 10905 // monthly township weight
   const baseGP = agg.totalTokens || 75860
 
+  // Normalised per-hub shares, derived from the live hub count (stays in sync).
+  const weights = useMemo(() => hubWeights(hubs.length), [hubs.length])
+  const hubShareKg = (i, total) => total * (weights[i] ?? 0)
+
   // Scale factor for the selected hub (all hubs = 1).
   const hubIdx = hubs.findIndex((h) => h.code === hubCode)
-  const hubFactor = hubCode === 'all' ? 1 : (hubShare(hubCode, hubIdx, baseKg) / (baseKg || 1))
+  const hubFactor = hubCode === 'all' ? 1 : (weights[hubIdx] ?? 0)
 
-  // Per-period chart data.
+  // Per-period chart data. Buckets strictly AFTER today are empty (kg = null) —
+  // the chart never fabricates future recycling that hasn't happened yet.
   const chart = useMemo(() => {
     const season = MALAYSIA_SEASONALITY
     const wob = (n) => 0.9 + ((Math.sin(n * 12.9898) * 43758.5453) % 1 + 1) % 1 * 0.2
     if (gran === 'day') {
       const days = new Date(year, monthIdx + 1, 0).getDate()
-      const perDay = (baseKg * (season[monthIdx] / season[new Date().getMonth()]) * hubFactor) / days
-      return Array.from({ length: days }, (_, d) => ({
-        label: String(d + 1),
-        kg: Math.round(perDay * wob(d + monthIdx * 31)),
-      }))
+      const perDay = (baseKg * (season[monthIdx] / season[nowMonth]) * hubFactor) / days
+      const monthInFuture = year > nowYear || (year === nowYear && monthIdx > nowMonth)
+      const monthInPast = year < nowYear || (year === nowYear && monthIdx < nowMonth)
+      return Array.from({ length: days }, (_, d) => {
+        const day = d + 1
+        // Future days (this month, after today; or any future month) are empty.
+        const future = monthInFuture || (year === nowYear && monthIdx === nowMonth && day > nowDay)
+        return {
+          label: String(day),
+          kg: future ? null : Math.round(perDay * wob(day + monthIdx * 31)),
+        }
+      })
     }
     if (gran === 'year') {
-      const g = 1.08
-      return [year - 2, year - 1, year, year + 1].map((y, k) => ({
-        label: String(y),
-        kg: Math.round(baseKg * 12 * hubFactor * g ** (k - 2)),
-      }))
+      const g = 1 + 0.08
+      return [year - 2, year - 1, year].map((y, k) => {
+        // Current year is year-to-date: only the months elapsed so far.
+        const monthsElapsed = y < nowYear ? 12 : y === nowYear ? nowMonth + nowDay / 31 : 0
+        return {
+          label: String(y),
+          kg: y > nowYear ? null : Math.round(baseKg * monthsElapsed * hubFactor * g ** (k - 2)),
+        }
+      })
     }
-    // month: 12 months of the year
-    return MONTHS.map((m, i) => ({
-      label: m,
-      kg: Math.round(baseKg * (season[i] / season[new Date().getMonth()]) * hubFactor),
-    }))
-  }, [gran, monthIdx, year, baseKg, hubFactor])
+    // month: 12 months of the selected year; future months (and the remainder
+    // of the current month) are empty.
+    return MONTHS.map((m, i) => {
+      const future = year > nowYear || (year === nowYear && i > nowMonth)
+      const partial = year === nowYear && i === nowMonth ? nowDay / new Date(year, i + 1, 0).getDate() : 1
+      return {
+        label: m,
+        kg: future ? null : Math.round(baseKg * (season[i] / season[nowMonth]) * hubFactor * partial),
+      }
+    })
+  }, [gran, monthIdx, year, baseKg, hubFactor, nowMonth, nowYear, nowDay])
 
-  const periodKg = chart.reduce((s, r) => s + r.kg, 0)
+  const periodKg = chart.reduce((s, r) => s + (r.kg || 0), 0)
   const periodItems = Math.round(periodKg / 0.0386) // avg item weight ~38.6g
   const periodGP = Math.round(baseGP * (periodKg / (baseKg || 1)))
 
   // Top hub (by share).
   const topHub = hubs.reduce((top, h, i) => {
-    const kg = hubShare(h.code, i, baseKg)
+    const kg = hubShareKg(i, baseKg)
     return kg > (top?.kg ?? -1) ? { ...h, kg } : top
   }, null)
 
@@ -83,7 +114,7 @@ export default function HubStatView() {
 
   // Hub ranking (all hubs, this period).
   const ranking = hubs
-    .map((h, i) => ({ ...h, kg: Math.round(hubShare(h.code, i, periodKg || baseKg)) }))
+    .map((h, i) => ({ ...h, kg: Math.round(hubShareKg(i, periodKg || baseKg)) }))
     .sort((a, b) => b.kg - a.kg)
   const rankTotal = ranking.reduce((s, r) => s + r.kg, 0) || 1
   const medal = ['🥇', '🥈', '🥉']

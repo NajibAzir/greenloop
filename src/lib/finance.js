@@ -68,15 +68,25 @@ export function computeRoi(transactions) {
  * Project monthly benefit, cost, surplus and cumulative ROI over `months`,
  * growing volume by the assumed monthly engagement growth rate.
  * Month 0 is the current snapshot; subsequent months compound.
+ *
+ * The forecast is explicitly a forward projection, so future months are
+ * expected here. To avoid a dead-straight 8% line we layer the calendar's
+ * Malaysian seasonality and a small deterministic wobble on top of the growth
+ * trend, so volume genuinely rises and falls month to month.
  */
 export function forecast(transactions, months = 12) {
   const base = computeRoi(transactions)
   const g = 1 + ECONOMICS.monthlyGrowthRate
+  const { year: ny, month: nm } = nowParts()
   const rows = []
   let cumulativeNet = -ECONOMICS.hubCapex // start in the hole by the setup cost
 
   for (let m = 1; m <= months; m++) {
-    const scale = g ** (m - 1)
+    // Calendar month this projection step lands on.
+    const calMonth = (nm + m) % 12
+    const season = MALAYSIA_SEASONALITY[calMonth] / MALAYSIA_SEASONALITY[nm]
+    const trend = g ** (m - 1)
+    const scale = trend * season * (1 + wobble(ny * 12 + nm + m))
     const benefit = round(base.totalBenefit * scale)
     // Opex is fixed; GP redemption scales with volume.
     const cost = round(base.opex + base.gpRedeemedRm * scale)
@@ -103,10 +113,17 @@ export function forecast(transactions, months = 12) {
   }
 }
 
-// Current month anchor (recomputed per call; the sim treats "today" as now).
+// Current date anchor (recomputed per call; the sim treats "today" as now).
+// `day` is the day-of-month (1-based) and `dayFraction` is how far through the
+// current month we are, so the current month can be shown as PARTIAL (only the
+// days elapsed so far), not a full month of data.
 function nowParts() {
   const d = new Date()
-  return { year: d.getFullYear(), month: d.getMonth() } // month 0-11
+  const year = d.getFullYear()
+  const month = d.getMonth() // 0-11
+  const day = d.getDate() // 1-based
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  return { year, month, day, daysInMonth, dayFraction: day / daysInMonth }
 }
 
 // Whole-month offset from the current month to the given year/month.
@@ -117,20 +134,52 @@ function offsetTo(year, month) {
 
 /**
  * The modelled diversion for one calendar month = live run-rate × growth-trend
- * (relative to now) × Malaysian seasonality × light history wobble. The current
- * month equals the live snapshot exactly.
+ * (relative to now) × Malaysian seasonality × deterministic wobble.
+ *
+ * Time semantics (so the dashboards never fabricate the future):
+ *   - PAST months (off < 0): full month, with seasonality + organic wobble so
+ *     the line genuinely rises and falls — not a smooth 8% ramp.
+ *   - CURRENT month (off === 0): PARTIAL — scaled to the fraction of the month
+ *     elapsed so far (e.g. on the 20th of a 31-day month ≈ 65%).
+ *   - FUTURE months (off > 0): EMPTY. Returns `empty: true` with zeroed values
+ *     so charts render nothing beyond today.
  */
 export function monthValue(base, year, month) {
   const g = 1 + ECONOMICS.monthlyGrowthRate
-  const { month: nm } = nowParts()
+  const { month: nm, dayFraction } = nowParts()
   const off = offsetTo(year, month)
+
+  // Future months carry no data — nothing has been collected yet.
+  if (off > 0) {
+    return {
+      offset: off,
+      projected: true,
+      empty: true,
+      scale: 0,
+      kg: null,
+      rm: null,
+      gp: null,
+      co2: null,
+      tokensAwarded: 0,
+      totalWeight: 0,
+      totalBulkValue: 0,
+      totalCo2: 0,
+      totalTokens: 0,
+      tokenPayoutRm: 0,
+    }
+  }
+
   const trend = g ** off
   const seasonFactor = MALAYSIA_SEASONALITY[month] / MALAYSIA_SEASONALITY[nm]
+  // Every past month gets an organic wobble; the current month is partial.
   const noise = off < 0 ? 1 + wobble(off) : 1
-  const scale = trend * seasonFactor * noise
+  const partial = off === 0 ? dayFraction : 1
+  const scale = trend * seasonFactor * noise * partial
   return {
     offset: off,
-    projected: off > 0,
+    projected: false,
+    empty: false,
+    partial: off === 0,
     scale,
     kg: round(base.kg * scale, 1),
     rm: round(base.commoditySales * scale),
@@ -147,31 +196,54 @@ export function monthValue(base, year, month) {
 
 const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+// Projected FULL-month diversion for a future (or current) calendar month,
+// using the growth trend × seasonality × deterministic wobble. Unlike
+// `monthValue`, this deliberately models the future so a dashed forecast line
+// can be drawn — it is never mixed into the "actual" series.
+function projectedMonthKg(base, year, month) {
+  const g = 1 + ECONOMICS.monthlyGrowthRate
+  const { month: nm } = nowParts()
+  const off = offsetTo(year, month)
+  const trend = g ** off
+  const season = MALAYSIA_SEASONALITY[month] / MALAYSIA_SEASONALITY[nm]
+  const noise = 1 + wobble(off)
+  return round(base.kg * trend * season * noise, 1)
+}
+
 /**
- * All 12 months of a given year as per-month diversion (kg), flagged
- * actual/projected relative to now. Used for the Monthly-view chart.
+ * All 12 months of a given year as per-month diversion (kg).
+ *   - `actual`   solid line, real data up to today (null in the future).
+ *   - `forecast` dashed line, only populated when `withForecast` is true: it
+ *     covers the current month onward so the projection visibly continues
+ *     past where the actual data stops. Past months leave it null.
+ * Used for the Monthly-view chart.
  */
-export function monthlySeries(transactions, year) {
+export function monthlySeries(transactions, year, withForecast = false) {
   const base = computeRoi(transactions)
   const rows = []
   for (let m = 0; m < 12; m++) {
     const v = monthValue(base, year, m)
+    // Forecast covers the current month and everything after it.
+    const isFutureOrNow = v.offset >= 0
     rows.push({
       key: `${year}-${m}`,
       label: `${MONTH_ABBR[m]} ${String(year).slice(2)}`,
       month: m,
       year,
-      projected: v.projected,
+      empty: v.empty,
       isNow: v.offset === 0,
-      actual: v.projected ? null : v.kg,
-      forecast: v.projected ? v.kg : null,
-      kg: v.kg,
+      partial: v.partial,
+      actual: v.empty ? null : v.kg,
+      kg: v.empty ? null : v.kg,
+      forecast: withForecast && isFutureOrNow ? projectedMonthKg(base, year, m) : null,
     })
   }
-  // Bridge: let the last actual month also carry a forecast point so the solid
-  // and dashed lines connect without a gap.
-  const lastActual = [...rows].reverse().find((r) => !r.projected)
-  if (lastActual) lastActual.forecast = lastActual.kg
+  // Bridge: the last actual month also carries a forecast point so the solid
+  // and dashed lines meet without a visible gap at "now".
+  if (withForecast) {
+    const lastActual = [...rows].reverse().find((r) => r.actual != null)
+    if (lastActual && lastActual.forecast == null) lastActual.forecast = lastActual.actual
+  }
   return rows
 }
 
@@ -182,33 +254,63 @@ export function yearTotal(transactions, year) {
     rm = 0,
     gp = 0,
     co2 = 0
-  let anyProjected = false
+  let anyData = false
+  let anyPartial = false
   for (let m = 0; m < 12; m++) {
     const v = monthValue(base, year, m)
+    if (v.empty) continue // future months contribute nothing
+    anyData = true
+    if (v.partial) anyPartial = true
     kg += v.kg
     rm += v.rm
     gp += v.gp
     co2 += v.co2
-    if (v.projected) anyProjected = true
   }
-  return { year, kg: round(kg, 1), rm: round(rm), gp: Math.round(gp), co2: round(co2, 1), projected: anyProjected }
+  return {
+    year,
+    kg: round(kg, 1),
+    rm: round(rm),
+    gp: Math.round(gp),
+    co2: round(co2, 1),
+    empty: !anyData, // whole year is in the future
+    partial: anyPartial, // year-to-date (current year, not yet complete)
+    projected: false,
+  }
+}
+
+// Projected FULL-year diversion (sum of all 12 projected months) for the annual
+// forecast line.
+function projectedYearKg(base, year) {
+  let kg = 0
+  for (let m = 0; m < 12; m++) kg += projectedMonthKg(base, year, m)
+  return round(kg, 1)
 }
 
 /** Year totals across a span of years, for the Annual-view chart. */
-export function annualSeries(transactions, years) {
+export function annualSeries(transactions, years, withForecast = false) {
+  const base = computeRoi(transactions)
   const { year: ny } = nowParts()
-  return years.map((y) => {
+  const rows = years.map((y) => {
     const t = yearTotal(transactions, y)
+    const future = y > ny
     return {
       key: String(y),
       label: String(y),
       year: y,
-      actual: y <= ny ? t.kg : null,
-      forecast: y >= ny ? t.kg : null,
-      kg: t.kg,
-      projected: y > ny,
+      // Future years are empty; the current year is year-to-date (partial).
+      actual: future ? null : t.kg,
+      kg: future ? null : t.kg,
+      empty: future,
+      partial: y === ny,
+      // Forecast (dashed) covers the current year onward when requested.
+      forecast: withForecast && y >= ny ? projectedYearKg(base, y) : null,
     }
   })
+  if (withForecast) {
+    const lastActual = [...rows].reverse().find((r) => r.actual != null)
+    if (lastActual && lastActual.forecast == null) lastActual.forecast = lastActual.actual
+  }
+  return rows
 }
 
 // Figures for a single month (stat cards + material scaling in Monthly view).
@@ -237,12 +339,26 @@ export function scaleForMonth(transactions, year, month) {
   return monthValue(base, year, month).kg / base.kg
 }
 
-// Period-over-period change for a metric comparing the current month to the
-// previous month (for the trend arrows on the stat cards).
-export function monthTrend() {
+// Real period-over-period change comparing this month's run-rate to last
+// month's — at FULL scale for both (so the current partial month isn't unfairly
+// penalised). Because seasonality + wobble vary month to month, the arrow can
+// point up OR down, not a fixed +8%.
+export function monthTrend(transactions) {
+  const base = computeRoi(transactions)
+  if (!base.kg) return { pct: 0, up: true }
+  const { year, month } = nowParts()
+  // Full-month equivalent of the current month (strip the partial factor by
+  // asking for the month value and dividing out dayFraction via season+trend).
   const g = 1 + ECONOMICS.monthlyGrowthRate
-  // Each month grows by the growth rate, so MoM change is simply the rate.
-  const pct = Math.round((g - 1) * 100)
+  const { month: nm } = nowParts()
+  const curFull = base.kg * (MALAYSIA_SEASONALITY[month] / MALAYSIA_SEASONALITY[nm]) * (1 + wobble(0))
+  const prevMonth = (month + 11) % 12
+  const prevYear = month === 0 ? year - 1 : year
+  const prevOff = (prevYear - year) * 12 + (prevMonth - nm)
+  const prev =
+    base.kg * (g ** prevOff) * (MALAYSIA_SEASONALITY[prevMonth] / MALAYSIA_SEASONALITY[nm]) * (1 + wobble(prevOff))
+  if (prev <= 0) return { pct: 0, up: true }
+  const pct = Math.round(((curFull - prev) / prev) * 100)
   return { pct, up: pct >= 0 }
 }
 

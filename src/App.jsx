@@ -84,7 +84,7 @@ function ModeSwitch({ mode, setMode }) {
 
 function Sidebar({ mode, setMode, active, setActive, onSeed, onReset, onCollapse, items }) {
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-slate-200 bg-white">
+    <aside className="flex h-full w-72 max-w-[85vw] shrink-0 flex-col border-r border-slate-200 bg-white lg:w-60 lg:max-w-none">
       <div className="flex items-center justify-between gap-2 px-5 py-4">
         <div className="flex items-center gap-2">
           <span className="text-2xl">♻️</span>
@@ -95,11 +95,11 @@ function Sidebar({ mode, setMode, active, setActive, onSeed, onReset, onCollapse
         </div>
         <button
           onClick={onCollapse}
-          className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600"
           title="Hide menu"
           aria-label="Hide menu"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
@@ -153,11 +153,38 @@ function Sidebar({ mode, setMode, active, setActive, onSeed, onReset, onCollapse
   )
 }
 
+// Tailwind's `lg` breakpoint — above this the sidebar is a static column, below
+// it's an off-canvas drawer.
+const LG = 1024
+const isDesktop = () => typeof window !== 'undefined' && window.innerWidth >= LG
+
 export default function App() {
   const [mode, setMode] = useState('resident')
   const [active, setActive] = useState('dropoff')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  // Open by default on desktop, collapsed on phones/tablets so the 60-wide
+  // sidebar doesn't eat the viewport.
+  const [sidebarOpen, setSidebarOpen] = useState(isDesktop)
   const { state, dispatch } = useStore()
+
+  // Keep the sidebar sensible across orientation / resize: show it on desktop,
+  // hide it when shrinking down to mobile.
+  useEffect(() => {
+    let wasDesktop = isDesktop()
+    function onResize() {
+      const nowDesktop = isDesktop()
+      if (nowDesktop !== wasDesktop) {
+        setSidebarOpen(nowDesktop)
+        wasDesktop = nowDesktop
+      }
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // On mobile, collapse the drawer after the user picks a page / switches mode.
+  function closeOnMobile() {
+    if (!isDesktop()) setSidebarOpen(false)
+  }
 
   // Resident menu items, filtered by account type. Mall tenants are businesses,
   // not individuals, so they don't get consumer voucher redemption.
@@ -182,6 +209,12 @@ export default function App() {
     setActive(MODES[nextMode].items[0].id) // jump to that mode's first page
   }
 
+  // Navigate to a page and, on mobile, close the drawer.
+  function goTo(pageId) {
+    setActive(pageId)
+    closeOnMobile()
+  }
+
   function seed() {
     dispatch({
       type: 'SEED',
@@ -198,38 +231,53 @@ export default function App() {
 
   return (
     <div className="flex h-screen overflow-hidden">
+      {/* Backdrop — only on mobile when the drawer is open. */}
       {sidebarOpen && (
-        <Sidebar
-          mode={mode}
-          setMode={switchMode}
-          active={active}
-          setActive={setActive}
-          items={menuItems}
-          onSeed={seed}
-          onReset={reset}
-          onCollapse={() => setSidebarOpen(false)}
+        <div
+          className="fixed inset-0 z-30 bg-slate-900/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
 
+      {/* Sidebar: fixed off-canvas drawer on mobile, static column on lg+. */}
+      {sidebarOpen && (
+        <div className="fixed inset-y-0 left-0 z-40 lg:static lg:z-auto">
+          <Sidebar
+            mode={mode}
+            setMode={(m) => {
+              switchMode(m)
+              closeOnMobile()
+            }}
+            active={active}
+            setActive={goTo}
+            items={menuItems}
+            onSeed={seed}
+            onReset={reset}
+            onCollapse={() => setSidebarOpen(false)}
+          />
+        </div>
+      )}
+
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur">
+        <header className="flex items-center gap-3 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
           <button
             onClick={() => setSidebarOpen((o) => !o)}
-            className="rounded-md p-2 text-slate-500 ring-1 ring-slate-200 hover:bg-slate-100 hover:text-slate-700"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-slate-500 ring-1 ring-slate-200 hover:bg-slate-100 hover:text-slate-700"
             title={sidebarOpen ? 'Hide menu' : 'Show menu'}
             aria-label={sidebarOpen ? 'Hide menu' : 'Show menu'}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 6h18M3 12h18M3 18h18" />
             </svg>
           </button>
-          <div>
-            <h2 className="text-lg font-bold text-slate-900">{PAGE_TITLES[active]}</h2>
-            <p className="text-sm text-slate-500">{PAGE_SUBTITLES[active]}</p>
+          <div className="min-w-0">
+            <h2 className="truncate text-base font-bold text-slate-900 sm:text-lg">{PAGE_TITLES[active]}</h2>
+            <p className="truncate text-xs text-slate-500 sm:text-sm">{PAGE_SUBTITLES[active]}</p>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="mx-auto max-w-5xl">
             {active === 'profile' ? (
               <ProfileView />

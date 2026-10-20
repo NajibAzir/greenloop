@@ -205,17 +205,17 @@ export default function LiveLogistics() {
         <div className="min-h-0 flex-1 overflow-y-auto">
           <table className="w-full table-fixed text-sm">
             <colgroup>
-              <col className="w-[34%]" />
               <col className="w-[30%]" />
-              <col className="w-[16%]" />
-              <col className="w-[20%]" />
+              <col className="w-[27%]" />
+              <col className="w-[15%]" />
+              <col className="w-[28%]" />
             </colgroup>
             <thead className="sticky top-0 z-10 bg-white">
               <tr className="border-b border-slate-100 text-left text-[11px] uppercase tracking-wide text-slate-400">
-                <th className="whitespace-nowrap px-4 py-2.5 font-semibold">Hub</th>
+                <th className="whitespace-nowrap px-3 py-2.5 font-semibold sm:px-4">Hub</th>
                 <th className="whitespace-nowrap px-2 py-2.5 font-semibold">Fill</th>
-                <th className="whitespace-nowrap px-2 py-2.5 font-semibold">Load</th>
-                <th className="whitespace-nowrap px-4 py-2.5 text-right font-semibold">Status</th>
+                <th className="whitespace-nowrap px-1 py-2.5 font-semibold">Load</th>
+                <th className="whitespace-nowrap px-2 py-2.5 text-right font-semibold sm:px-4">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -246,20 +246,20 @@ export default function LiveLogistics() {
                         {h.hoursToFull === null ? '' : h.hoursToFull <= 0 ? 'full now' : `full in ~${h.hoursToFull.toFixed(1)}h`}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-2 py-2.5 text-xs tabular-nums text-slate-600">
+                    <td className="whitespace-nowrap px-1 py-2.5 text-xs tabular-nums text-slate-600">
                       {h.loadKg} kg
                     </td>
-                    <td className="px-4 py-2.5 text-right">
+                    <td className="px-2 py-2.5 text-right sm:px-4">
                       {coming ? (
-                        <span className="whitespace-nowrap rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
+                        <span className="inline-block rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-semibold leading-tight text-blue-700">
                           🚛 Scheduled
                         </span>
                       ) : h.needsPickup ? (
-                        <span className="whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                        <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold leading-tight text-amber-700">
                           Needs pickup
                         </span>
                       ) : (
-                        <span className="whitespace-nowrap rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700">
+                        <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold leading-tight text-green-700">
                           Healthy
                         </span>
                       )}
@@ -273,9 +273,9 @@ export default function LiveLogistics() {
       </Card>
 
       {/* Map */}
-      <Card className="flex flex-col overflow-hidden lg:h-[min(60vh,560px)] lg:max-h-[560px] lg:min-h-[320px]">
+      <Card className="flex h-[55vh] flex-col overflow-hidden lg:h-[min(60vh,560px)] lg:max-h-[560px] lg:min-h-[320px]">
         <CardHeader
-          title="Fleet Dispatch Map — Greenview Township"
+          title="Fleet Dispatch Map — City of Elmina"
           subtitle={`${flaggedCount} at/over threshold · ${active.length} active route${active.length === 1 ? '' : 's'}`}
         />
         <div className="min-h-0 flex-1 p-3">
@@ -330,7 +330,8 @@ function FleetBoard({ it, clock }) {
           {it.pickups.length} stop{it.pickups.length === 1 ? '' : 's'} · {it.totalLoadKg} kg
         </span>
       </div>
-      <table className="w-full text-sm">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[460px] text-sm">
         <thead>
           <tr className="text-left text-[11px] uppercase tracking-wide text-slate-400">
             <th className="px-4 py-1.5 font-medium">Leg</th>
@@ -374,6 +375,7 @@ function FleetBoard({ it, clock }) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

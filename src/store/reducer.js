@@ -8,7 +8,9 @@ import {
   COLLECTION_HUBS,
 } from '../data/catalog.js'
 
-export const STORAGE_KEY = 'greenloop-state-v2'
+// v3: unified Sime Darby Property hub network (hub ids + registeredHubs changed),
+// so older persisted state must be discarded rather than migrated.
+export const STORAGE_KEY = 'greenloop-state-v3'
 
 // A fresh per-persona account (resident OR mall tenant).
 function emptyAccount(accountType) {
@@ -37,7 +39,7 @@ function defaultProfiles() {
       id: 'TENT-00000001',
       name: 'kedai kopitiam',
       email: 'kopitiam@gmail.com',
-      address: 'Lot G-08, Greenview Mall',
+      address: 'Lot G-08, Elmina Lakeside Mall',
     },
   }
 }
@@ -180,13 +182,14 @@ export function reducer(state, action) {
     case 'REGISTER_HUB': {
       const list = state.registeredHubs || []
       const n = list.length + 1
-      const code = `HUB-${String(n).padStart(4, '0')}`
+      const code = `NEW-${String(n - COLLECTION_HUBS.length).padStart(2, '0')}`
       // Round-robin a data hub so the new hub's drops feed a real bin's metrics.
       const dataHubId = COLLECTION_HUBS[(n - 1) % COLLECTION_HUBS.length].id
       const hub = {
         code,
         name: action.name || `New Hub ${n}`,
-        address: action.address || 'Township',
+        address: action.address || 'City of Elmina',
+        kind: action.kind || 'township',
         type: 'auto',
         dataHubId,
       }

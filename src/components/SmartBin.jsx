@@ -32,8 +32,8 @@ export default function SmartBin({ hub, onBack }) {
   const { dispatch } = useStore()
   const [dark, setDark] = useState(true) // theme: dark amber (default) | light green
   const timers = useRef([])
-  const dataHubId = hub.dataHubId || 'hub-a'
-  const code = hub.code || 'ELM-014'
+  const dataHubId = hub.dataHubId || 'hub-elmina-west'
+  const code = hub.code || 'ELM-01'
   const isAuto = hub.type === 'auto'
   const [auto, setAuto] = useState(false) // auto-simulation running
 

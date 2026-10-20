@@ -37,12 +37,11 @@ import LiveLogistics from './LiveLogistics.jsx'
 function TrendStat({ label, value, sub, accent = 'text-slate-900', trend }) {
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <div className="mt-1 flex items-end justify-between gap-2">
-        <p className={`text-2xl font-bold tabular-nums ${accent}`}>{value}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
         {trend && (
           <span
-            className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs font-semibold ${
+            className={`inline-flex shrink-0 items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs font-semibold ${
               trend.up ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
             }`}
           >
@@ -50,6 +49,7 @@ function TrendStat({ label, value, sub, accent = 'text-slate-900', trend }) {
           </span>
         )}
       </div>
+      <p className={`mt-1 text-xl font-bold tabular-nums sm:text-2xl ${accent}`}>{value}</p>
       {sub && <p className="mt-0.5 text-xs text-slate-500">{sub}</p>}
     </div>
   )
@@ -174,8 +174,11 @@ function Select({ value, onChange, options }) {
   )
 }
 
-// Per-month (or per-year) diversion chart: solid actual, dashed projected.
-function DiversionChart({ data }) {
+// Per-month (or per-year) diversion chart. The SOLID line is actual data and
+// stops at today (future periods are null, never fabricated). When projection
+// is on, a separate DASHED line continues from now into the future so the two
+// are always visually distinct. A "Now" marker shows where today sits.
+function DiversionChart({ data, showForecast }) {
   const nowRow = data.find((d) => d.isNow)
   return (
     <div className="h-72">
@@ -183,9 +186,7 @@ function DiversionChart({ data }) {
         <ComposedChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <XAxis dataKey="label" tick={{ fontSize: 11 }} interval="preserveStartEnd" minTickGap={12} />
           <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}t` : v)} />
-          <Tooltip
-            formatter={(v, n) => [`${Math.round(v).toLocaleString()} kg`, n === 'actual' ? 'Actual' : 'Projected']}
-          />
+          <Tooltip formatter={(v, n) => [`${Math.round(v).toLocaleString()} kg`, n === 'actual' ? 'Actual' : 'Projected']} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           {nowRow && (
             <ReferenceLine
@@ -195,8 +196,10 @@ function DiversionChart({ data }) {
               label={{ value: 'Now', fontSize: 10, fill: '#64748b', position: 'top' }}
             />
           )}
-          <Area type="monotone" dataKey="actual" name="Actual" stroke="#16a34a" fill="#bbf7d0" strokeWidth={2.5} connectNulls dot={{ r: 2 }} />
-          <Line type="monotone" dataKey="forecast" name="Projected" stroke="#16a34a" strokeWidth={2.5} strokeDasharray="6 4" dot={false} connectNulls />
+          <Area type="monotone" dataKey="actual" name="Actual" stroke="#16a34a" fill="#bbf7d0" strokeWidth={2.5} connectNulls={false} dot={{ r: 2 }} />
+          {showForecast && (
+            <Line type="monotone" dataKey="forecast" name="Projected" stroke="#16a34a" strokeWidth={2.5} strokeDasharray="6 4" dot={false} connectNulls />
+          )}
         </ComposedChart>
       </ResponsiveContainer>
     </div>
@@ -210,8 +213,9 @@ function DiversionMetrics() {
   const [view, setView] = useState('month') // 'month' | 'year'
   const [selYear, setSelYear] = useState(nowYear)
   const [selMonth, setSelMonth] = useState(nowMonth)
+  const [showForecast, setShowForecast] = useState(false) // dashed projection on/off
 
-  const mom = monthTrend()
+  const mom = useMemo(() => monthTrend(state.opsTransactions), [state.opsTransactions])
   const years = useMemo(() => {
     const arr = []
     for (let y = nowYear - 2; y <= nowYear + 3; y++) arr.push(y)
@@ -221,16 +225,17 @@ function DiversionMetrics() {
   const baseAgg = useMemo(() => aggregate(state.opsTransactions), [state.opsTransactions])
 
   const chartData = useMemo(() => {
-    if (view === 'year') return annualSeries(state.opsTransactions, years)
-    return monthlySeries(state.opsTransactions, selYear)
-  }, [view, state.opsTransactions, years, selYear])
+    if (view === 'year') return annualSeries(state.opsTransactions, years, showForecast)
+    return monthlySeries(state.opsTransactions, selYear, showForecast)
+  }, [view, state.opsTransactions, years, selYear, showForecast])
 
   const scope = useMemo(() => {
     if (view === 'year') {
       const t = yearTotal(state.opsTransactions, selYear)
       return {
         label: `${selYear}`,
-        projected: t.projected,
+        empty: t.empty,
+        partial: t.partial,
         weight: t.kg,
         co2: t.co2,
         bulk: t.rm,
@@ -241,14 +246,18 @@ function DiversionMetrics() {
     const m = monthFigures(state.opsTransactions, selYear, selMonth)
     return {
       label: `${MONTH_NAMES[selMonth].slice(0, 3)} ${selYear}`,
-      projected: m.projected,
-      weight: m.kg,
-      co2: m.co2,
-      bulk: m.rm,
-      gp: m.gp,
+      empty: m.empty,
+      partial: m.partial,
+      weight: m.empty ? 0 : m.kg,
+      co2: m.empty ? 0 : m.co2,
+      bulk: m.empty ? 0 : m.rm,
+      gp: m.empty ? 0 : m.gp,
       materialScale: scaleForMonth(state.opsTransactions, selYear, selMonth),
     }
   }, [view, state.opsTransactions, selYear, selMonth])
+
+  // Suffix shown on the stat cards for the selected scope.
+  const scopeNote = scope.empty ? ' · no data yet' : scope.partial ? ' · to date' : ''
 
   return (
     <div className="space-y-5">
@@ -286,29 +295,38 @@ function DiversionMetrics() {
         </div>
       </div>
 
-      {/* Stat cards for the selected scope */}
+      {/* Stat cards for the selected scope. Future periods show a dash, not 0. */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <TrendStat label="Waste Diverted" value={formatWeight(scope.weight)} sub={`${scope.label}${scope.projected ? ' · projected' : ''}`} accent="text-green-600" trend={mom} />
-        <TrendStat label="CO₂ Avoided" value={`${Math.round(scope.co2).toLocaleString()} kg`} sub={scope.label} trend={mom} />
-        <TrendStat label="Bulk Value" value={formatRm(scope.bulk)} sub={`${scope.label} · commodity`} accent="text-green-600" trend={mom} />
-        <TrendStat label="GP Issued" value={formatGP(scope.gp)} sub={`≈ ${formatRm(scope.gp * 0.1)}`} trend={mom} />
+        <TrendStat label="Waste Diverted" value={scope.empty ? '—' : formatWeight(scope.weight)} sub={`${scope.label}${scopeNote}`} accent="text-green-600" trend={scope.empty ? null : mom} />
+        <TrendStat label="CO₂ Avoided" value={scope.empty ? '—' : `${Math.round(scope.co2).toLocaleString()} kg`} sub={`${scope.label}${scopeNote}`} trend={scope.empty ? null : mom} />
+        <TrendStat label="Bulk Value" value={scope.empty ? '—' : formatRm(scope.bulk)} sub={`${scope.label} · commodity`} accent="text-green-600" trend={scope.empty ? null : mom} />
+        <TrendStat label="GP Issued" value={scope.empty ? '—' : formatGP(scope.gp)} sub={scope.empty ? 'no data yet' : `≈ ${formatRm(scope.gp * 0.1)}`} trend={scope.empty ? null : mom} />
       </div>
 
       {/* Diversion chart (per-month or per-year, actual vs projected) */}
       <Card>
         <CardHeader
           title={view === 'year' ? 'Annual Diversion' : `Monthly Diversion — ${selYear}`}
-          subtitle="Solid = actual · dashed = projected · seasonal pattern included"
+          subtitle={
+            showForecast
+              ? 'Solid = actual up to today · dashed = projection · seasonal pattern included'
+              : 'Actual collected volume up to today · seasonal pattern included · future is empty'
+          }
           right={
-            scope.projected ? (
-              <span className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">Projected period</span>
-            ) : (
-              <span className="rounded-md bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">Actual data</span>
-            )
+            <button
+              onClick={() => setShowForecast((s) => !s)}
+              className={`rounded-md px-2.5 py-1 text-xs font-semibold ring-1 transition ${
+                showForecast
+                  ? 'bg-green-600 text-white ring-green-600'
+                  : 'bg-white text-slate-600 ring-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              {showForecast ? '✓ Projection on' : 'Show projection'}
+            </button>
           }
         />
         <div className="px-5 py-4">
-          <DiversionChart data={chartData} />
+          <DiversionChart data={chartData} showForecast={showForecast} />
         </div>
       </Card>
 

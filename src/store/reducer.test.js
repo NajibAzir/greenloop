@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { reducer, initialState } from './reducer.js'
-import { TOKEN_TO_RM, VOUCHERS } from '../data/catalog.js'
+import { TOKEN_TO_RM, VOUCHERS, HOME_HUB_ID } from '../data/catalog.js'
 
 // Helper: the active persona account.
 const acc = (s) => s.accounts[s.accountType]
@@ -88,10 +88,10 @@ describe('reducer', () => {
 
   it('DROP_OFF adds the item weight to the home hub load', () => {
     const start = initialState()
-    const baseA = start.hubLoads['hub-a']
+    const baseA = start.hubLoads[HOME_HUB_ID]
     const s = reducer(start, { type: 'DROP_OFF', itemId: 'cardboard-box', quantity: 5 })
-    // 5 boxes * 0.4 kg = 2 kg added to hub-a
-    expect(s.hubLoads['hub-a']).toBeCloseTo(baseA + 2, 5)
+    // 5 boxes * 0.4 kg = 2 kg added to the resident's home hub
+    expect(s.hubLoads[HOME_HUB_ID]).toBeCloseTo(baseA + 2, 5)
   })
 
   it('SET_ACCOUNT switches the active persona', () => {

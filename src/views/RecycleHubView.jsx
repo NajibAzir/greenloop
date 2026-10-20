@@ -9,6 +9,7 @@ export default function RecycleHubView() {
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
+  const [kind, setKind] = useState('township')
 
   const hubs = state.registeredHubs || []
 
@@ -19,8 +20,8 @@ export default function RecycleHubView() {
   function register(e) {
     e.preventDefault()
     if (!name.trim()) return
-    dispatch({ type: 'REGISTER_HUB', name: name.trim(), address: address.trim() })
-    setName(''); setAddress(''); setShowForm(false)
+    dispatch({ type: 'REGISTER_HUB', name: name.trim(), address: address.trim(), kind })
+    setName(''); setAddress(''); setKind('township'); setShowForm(false)
   }
 
   return (
@@ -44,8 +45,16 @@ export default function RecycleHubView() {
             </label>
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-slate-600">Address</span>
-              <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, area"
+              <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, development"
                 className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500" />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-slate-600">Type</span>
+              <select value={kind} onChange={(e) => setKind(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500">
+                <option value="township">Township precinct</option>
+                <option value="mall">Mall / retail</option>
+              </select>
             </label>
           </div>
           <div className="mt-3 flex gap-2">
@@ -66,6 +75,7 @@ export default function RecycleHubView() {
 
 function HubCard({ hub, onOpen }) {
   const manual = hub.type === 'manual'
+  const isMall = hub.kind === 'mall'
   return (
     <button
       onClick={onOpen}
@@ -74,7 +84,7 @@ function HubCard({ hub, onOpen }) {
       }`}
     >
       <div className="flex items-start justify-between">
-        <span className="grid h-10 w-10 place-items-center rounded-md bg-slate-100 text-xl">🗑️</span>
+        <span className="grid h-10 w-10 place-items-center rounded-md bg-slate-100 text-xl">{isMall ? '🏬' : '🗑️'}</span>
         <span
           className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
             manual ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700'
@@ -83,7 +93,12 @@ function HubCard({ hub, onOpen }) {
           {manual ? 'Manual demo' : 'Auto simulation'}
         </span>
       </div>
-      <h3 className="mt-3 text-base font-semibold text-slate-900">{hub.name}</h3>
+      <div className="mt-3 flex items-center gap-2">
+        <h3 className="text-base font-semibold text-slate-900">{hub.name}</h3>
+        <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${isMall ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}`}>
+          {isMall ? 'Mall' : 'Township'}
+        </span>
+      </div>
       <p className="font-mono text-xs text-slate-400">{hub.code}</p>
       <p className="mt-2 text-sm text-slate-500">{hub.address}</p>
       <p className="mt-3 flex items-center gap-1.5 text-sm text-slate-400">
