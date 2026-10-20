@@ -1,207 +1,142 @@
-import { useEffect, useState } from 'react'
-import { useStore } from './store/StoreContext.jsx'
-import { buildSeedTransactions, buildAccountHistory } from './lib/seed.js'
-import AuthView from './views/AuthView.jsx'
-import UserView from './views/UserView.jsx'
+import { useEffect, useMemo, useState } from 'react'
+import { useStore, useProfile } from './store/StoreContext.jsx'
+import { buildSeedTransactions } from './lib/seed.js'
+import AuthPage from './views/AuthPage.jsx'
+import ProfileView, { Avatar } from './views/ProfileView.jsx'
+import HubScanView from './views/HubScanView.jsx'
+import ResidentView from './views/ResidentView.jsx'
 import ManagementView from './views/ManagementView.jsx'
+import HubsView from './views/HubsView.jsx'
+import HubStatView from './views/HubStatView.jsx'
 
+const COMMON = (third) => [
+  { id: 'profile', label: 'Profile', icon: '👤' },
+  { id: 'scan', label: 'Scan', icon: '📷' },
+  third,
+  { id: 'activity', label: 'Activity', icon: '📜' },
+]
 const MENUS = {
-  user: {
-    label: 'User View',
-    items: [
-      { id: 'profile', label: 'Profile', icon: '👤' },
-      { id: 'scan', label: 'Scan', icon: '📷' },
-      { id: 'redeem', label: 'Redeem', icon: '🎟️' },
-      { id: 'activity', label: 'Activity', icon: '📜' },
-    ],
-  },
-  tenant: {
-    label: 'Tenant View',
-    items: [
-      { id: 'profile', label: 'Profile', icon: '👤' },
-      { id: 'scan', label: 'Scan', icon: '📷' },
-      { id: 'offset', label: 'Offset Maintenance Fee', icon: '🏠' },
-      { id: 'activity', label: 'Activity', icon: '📜' },
-    ],
-  },
-  ops: {
-    label: 'Operation View',
-    items: [
-      { id: 'metrics', label: 'Diversion Metrics', icon: '📊' },
-      { id: 'ledger', label: 'Financial Ledger', icon: '💰' },
-      { id: 'logistics', label: 'Logistics & Dispatch', icon: '🚛' },
-      { id: 'hubs', label: 'Recycle Hub', icon: '♻️' },
-      { id: 'hubstats', label: 'Hub Stat', icon: '📈' },
-    ],
-  },
+  user: COMMON({ id: 'redeem', label: 'Redeem', icon: '🎟️' }),
+  tenant: COMMON({ id: 'offset', label: 'Offset Maintenance Fee', icon: '🏠' }),
+  ops: [
+    { id: 'metrics', label: 'Diversion Metrics', icon: '📊' },
+    { id: 'ledger', label: 'Financial Ledger', icon: '💰' },
+    { id: 'logistics', label: 'Logistics & Dispatch', icon: '🚛' },
+    { id: 'hubs', label: 'Recycle Hub', icon: '🗑️' },
+    { id: 'hubstat', label: 'Hub Stat', icon: '📈' },
+  ],
+}
+const ROLE_LABEL = { user: 'User', tenant: 'Tenant', ops: 'Operations' }
+
+const TITLES = {
+  profile: ['Profile', 'Your account details and Green Points balance.'],
+  scan: ['Scan', 'Scan a hub QR to connect, then recycle.'],
+  redeem: ['Redeem', 'Spend your Green Points like cash at township mall tenants.'],
+  offset: ['Offset Maintenance Fee', 'Apply Green Points to this month’s mall service charge.'],
+  activity: ['Activity', 'Everything you have recycled, redeemed and offset.'],
+  metrics: ['Diversion Metrics', 'Live landfill diversion across the township, by material.'],
+  ledger: ['Financial Ledger', 'Operating ROI, payback and revenue forecast for the hubs.'],
+  logistics: ['Logistics & Dispatch', 'Predicted hub capacity and AI dispatch of the collection fleet.'],
+  hubs: ['Recycle Hub', 'Registered hubs and their smart recycle bins.'],
+  hubstat: ['Hub Stat', 'Station performance, recycled item types and hub ranking.'],
 }
 
-const PAGE_TITLES = {
-  profile: 'Profile',
-  scan: 'Scan Hub QR',
-  redeem: 'Redeem Vouchers',
-  offset: 'Offset Maintenance Fee',
-  activity: 'My Activity',
-  metrics: 'Diversion Metrics',
-  ledger: 'Financial Ledger',
-  logistics: 'Logistics & Dispatch',
-  hubs: 'Recycle Hub',
-  hubstats: 'Hub Stat',
-}
-
-const PAGE_SUBTITLES = {
-  profile: 'Your account, Green Point balance and settings',
-  scan: 'Scan a hub QR to connect, then recycle items to earn Green Points',
-  redeem: 'Spend your Green Points like cash at township mall tenants',
-  offset: 'Apply Green Points to this month’s fee',
-  activity: 'A history of everything you have recycled, redeemed and offset',
-  metrics: 'Live landfill diversion across the township, broken down by material',
-  ledger: 'Operating ROI, payback and revenue forecast for the hub',
-  logistics: 'Predicted hub capacity and AI dispatch of the collection fleet',
-  hubs: 'Registered recycle hubs — open a hub to run the Smart Recycle Bin',
-  hubstats: 'Hub station performance, material breakdown and contribution ranking',
-}
-
-function Sidebar({ menu, active, setActive, onLogout, onSeed, onReset, showOpsTools }) {
+function Sidebar({ role, items, active, setActive, onCollapse, onLogout, onSeed, onReset }) {
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-slate-200 bg-white">
-      <div className="flex items-center gap-2 px-5 py-4">
-        <span className="text-2xl">♻️</span>
-        <div>
-          <h1 className="text-base font-bold leading-tight text-slate-900">GreenLoop</h1>
-          <p className="text-[11px] text-slate-500">Smart Recycling Ecosystem</p>
+      <div className="flex items-center justify-between gap-2 px-5 py-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">♻️</span>
+          <div>
+            <h1 className="text-base font-bold leading-tight text-slate-900">GreenLoop</h1>
+            <p className="text-[11px] text-slate-500">{ROLE_LABEL[role]} view</p>
+          </div>
         </div>
+        <button onClick={onCollapse} className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600" title="Hide menu" aria-label="Hide menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+        </button>
       </div>
-
-      <div className="px-3 pb-1">
-        <p className="rounded-lg bg-green-50 px-2.5 py-1.5 text-center text-[11px] font-bold uppercase tracking-wide text-green-700 ring-1 ring-green-200">
-          {menu.label}
-        </p>
-      </div>
-
-      <nav className="flex-1 overflow-y-auto px-3 py-2">
+      <nav className="flex-1 overflow-y-auto px-3 pb-4">
         <ul className="space-y-0.5">
-          {menu.items.map((item) => (
+          {items.map((item) => (
             <li key={item.id}>
-              <button
-                onClick={() => setActive(item.id)}
-                className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition ${
-                  active === item.id
-                    ? 'bg-green-50 text-green-700 ring-1 ring-green-200'
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span className="text-base">{item.icon}</span>
-                <span className="truncate">{item.label}</span>
+              <button onClick={() => setActive(item.id)}
+                className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition ${active === item.id ? 'bg-green-50 text-green-700 ring-1 ring-green-200' : 'text-slate-600 hover:bg-slate-50'}`}>
+                <span className="text-base">{item.icon}</span><span className="truncate">{item.label}</span>
               </button>
             </li>
           ))}
         </ul>
       </nav>
-
       <div className="space-y-2 border-t border-slate-200 p-3">
-        {showOpsTools && (
+        {role === 'ops' && (
           <>
-            <button onClick={onSeed} className="w-full rounded-lg bg-white px-3 py-2 text-xs font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50">
-              Load Demo Data
-            </button>
-            <button onClick={onReset} className="w-full rounded-lg bg-white px-3 py-2 text-xs font-semibold text-red-600 ring-1 ring-red-200 hover:bg-red-50">
-              Reset
-            </button>
+            <button onClick={onSeed} className="w-full rounded-lg bg-white px-3 py-2 text-xs font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50">Load Demo Data</button>
+            <button onClick={onReset} className="w-full rounded-lg bg-white px-3 py-2 text-xs font-semibold text-red-600 ring-1 ring-red-200 hover:bg-red-50">Reset ops data</button>
           </>
         )}
-        <button onClick={onLogout} className="w-full rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700">
-          ⏻ Logout
-        </button>
+        <button onClick={onLogout} className="w-full rounded-lg bg-slate-800 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-900">Log out</button>
       </div>
     </aside>
   )
 }
 
 export default function App() {
-  const { state, dispatch } = useStore()
-  const session = state.auth?.session
+  const { session, setSession, dispatch } = useStore()
+  const profile = useProfile()
   const [active, setActive] = useState('profile')
   const [sidebarOpen, setSidebarOpen] = useState(true)
-
-  const menu = session ? MENUS[session.role] : null
+  const role = session?.role
+  const items = useMemo(() => MENUS[role] || [], [role])
 
   useEffect(() => {
-    if (menu && !menu.items.some((i) => i.id === active)) setActive(menu.items[0].id)
-  }, [menu, active])
+    if (role && !items.some((i) => i.id === active)) setActive(items[0].id)
+  }, [role, items, active])
 
-  if (!session) return <AuthView />
-
-  function seed() {
-    dispatch({
-      type: 'SEED',
-      transactions: buildSeedTransactions(),
-      residenceTx: buildAccountHistory('residence'),
-      tenantTx: buildAccountHistory('tenant'),
-    })
-  }
-  function reset() {
-    if (confirm('Reset the demo? This clears all Green Points, drop-offs and vouchers.')) {
-      dispatch({ type: 'RESET' })
-    }
-  }
+  // A user who logs out should not stay linked to a hub.
+  const { state } = useStore()
   function logout() {
-    dispatch({ type: 'LOGOUT' })
+    const e = Object.entries(state.hubSessions).find(([, s]) => s.uid === session?.id)
+    if (e) dispatch({ type: 'UNLINK_HUB', hubId: e[0] })
+    setSession(null)
     setActive('profile')
   }
 
+  if (!session || (role !== 'ops' && !profile)) return <AuthPage />
+
+  let content
+  if (role === 'ops') {
+    content = active === 'hubs' ? <HubsView /> : active === 'hubstat' ? <HubStatView /> : <ManagementView page={active} />
+  } else if (active === 'profile') content = <ProfileView />
+  else if (active === 'scan') content = <HubScanView />
+  else content = <ResidentView page={active} />
+
+  const [title, sub] = TITLES[active] || ['', '']
   return (
     <div className="flex h-screen overflow-hidden">
       {sidebarOpen && (
-        <Sidebar
-          menu={menu}
-          active={active}
-          setActive={setActive}
-          onLogout={logout}
-          onSeed={seed}
-          onReset={reset}
-          showOpsTools={session.role === 'ops'}
-        />
+        <Sidebar role={role} items={items} active={active} setActive={setActive} onCollapse={() => setSidebarOpen(false)} onLogout={logout}
+          onSeed={() => dispatch({ type: 'SEED', transactions: buildSeedTransactions() })}
+          onReset={() => confirm('Reset township operations data (metrics, ledger, hub stats)? Accounts and hubs are kept.') && dispatch({ type: 'RESET' })} />
       )}
-
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-3 border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur">
-          <button
-            onClick={() => setSidebarOpen((o) => !o)}
-            className="rounded-md p-2 text-slate-500 ring-1 ring-slate-200 hover:bg-slate-100 hover:text-slate-700"
-            aria-label="Toggle menu"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M3 6h18M3 12h18M3 18h18" />
-            </svg>
+          <button onClick={() => setSidebarOpen((o) => !o)} className="rounded-md p-2 text-slate-500 ring-1 ring-slate-200 hover:bg-slate-100 hover:text-slate-700" aria-label="Toggle menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
           </button>
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-bold text-slate-900">{PAGE_TITLES[active]}</h2>
-            <p className="truncate text-sm text-slate-500">{PAGE_SUBTITLES[active]}</p>
+            <h2 className="text-lg font-bold text-slate-900">{title}</h2>
+            <p className="truncate text-sm text-slate-500">{sub}</p>
           </div>
-          <div className="flex items-center gap-2.5">
-            <div className="text-right">
-              <p className="text-sm font-semibold leading-tight text-slate-800">{session.name}</p>
-              <p className="font-mono text-[11px] text-slate-400">{session.id}</p>
-            </div>
-            {session.avatar ? (
-              <img src={session.avatar} alt="" className="h-9 w-9 rounded-full object-cover ring-2 ring-green-200" />
-            ) : (
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-lg ring-2 ring-green-200">
-                {session.role === 'ops' ? '🏢' : session.role === 'tenant' ? '🏬' : '🙋'}
-              </span>
-            )}
-          </div>
+          {profile && (
+            <button onClick={() => setActive('profile')} className="flex items-center gap-2" title="Profile">
+              <span className="hidden text-right text-xs sm:block"><span className="block font-semibold text-slate-800">{profile.name}</span><span className="block font-mono text-slate-500">{profile.id}</span></span>
+              <Avatar user={profile} size={38} />
+            </button>
+          )}
         </header>
-
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="mx-auto max-w-5xl">
-            {session.role === 'ops' ? (
-              <ManagementView page={active} />
-            ) : (
-              <UserView page={active} role={session.role} />
-            )}
-          </div>
+          <div className={`mx-auto ${active === 'hubs' ? 'max-w-6xl' : 'max-w-5xl'}`}>{content}</div>
         </main>
       </div>
     </div>

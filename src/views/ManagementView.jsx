@@ -1,5 +1,3 @@
-import RecycleHubs from './RecycleHubs.jsx'
-import HubStats from './HubStats.jsx'
 import { useMemo, useState } from 'react'
 import {
   BarChart,
@@ -451,10 +449,6 @@ function FinancialLedger() {
 // -------------------------------------------------------------------------
 export default function ManagementView({ page }) {
   switch (page) {
-    case 'hubs':
-      return <RecycleHubs />
-    case 'hubstats':
-      return <HubStats />
     case 'ledger':
       return <FinancialLedger />
     case 'logistics':

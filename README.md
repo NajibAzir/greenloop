@@ -44,20 +44,28 @@ npm run build   # production build into dist/
 npm test        # run the Vitest unit tests
 ```
 
-## Navigation
+## Login and views
 
-A **mode switch** at the top of the sidebar toggles between the two personas,
-and the sidebar shows only that persona's menu. The sidebar can be collapsed,
-and **Load Demo Data** / **Reset** live at the bottom.
+Sign in on the first screen, or **Register** as a User or a Tenant. IDs are issued
+in order: `USER-000000001`, `TENT-000000001`. Operations signs in with
+`synkosys` / `synkosys123`.
 
-- **Resident & Tenant** — Scan & Drop-off · Redeem Vouchers* · Offset Fee · My Activity
-- **Developer Operations** — Diversion Metrics · Financial Ledger · Logistics & Dispatch
+- **User** — Profile · Scan · Redeem · Activity
+- **Tenant** — Profile · Scan · Offset Maintenance Fee · Activity
+- **Operations** — Diversion Metrics · Financial Ledger · Logistics & Dispatch ·
+  **Recycle Hub** · **Hub Stat**
 
-An **account toggle** (Residence 🏠 / Mall Tenant 🏬) at the top of the resident
-view switches between two independent accounts — each with its own GP balance,
-history, vouchers and monthly charge. *Vouchers are a consumer perk, so **Mall
-Tenant** accounts don't see Redeem Vouchers; their GP offsets the mall service
-charge instead.
+**Scan** connects to a hub by QR (camera, hub code, or the demo buttons) and lists
+the items Cam 2 accepted with their GP. **Recycle Hub** shows the registered hubs;
+open one to see its smart recycle bin (`public/hub-sim.html`). HUB-0001 is the
+manual demo bin; HUB-0002 to HUB-0004 run an automatic simulation while their
+page is open. **Hub Stat** charts hub performance by day/month/year, item types
+and a hub ranking.
+
+Demo note: there is no backend. Accounts and data live in the browser's
+localStorage (passwords included, in plain text), and two tabs of the same
+browser stay in sync. That is how a user tab and an Operations tab talk to each
+other. A real deployment needs a server and hashed passwords.
 
 ## How Green Points are granted
 
