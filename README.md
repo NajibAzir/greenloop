@@ -12,6 +12,9 @@ simulated client-side — no backend, no API keys required.
 
 ## Screenshots
 
+### Resident — Scan Hub QR to start a session
+![Hub QR pairing](docs/screenshots/resident-hub-qr.png)
+
 ### Resident — Scan & Drop-off (AI recyclability check → earn GP)
 ![Resident Scan & Drop-off](docs/screenshots/resident-dropoff.png)
 
@@ -96,6 +99,9 @@ next 3 months, 12 months, or 2 years.
 
 1. Click **Load Demo Data** to populate township figures and both resident accounts.
 2. **Scan & Drop-off** (resident):
+   - **Step 1 — Scan Hub QR** to start a recycling session (tap a hub's QR to
+     pair). Drop-offs are attributed to the paired hub, feeding its live
+     capacity in the dispatch sim. End the session any time.
    - **Simulated** mode has two sources: **Example Photo** (generated inline-SVG
      photos analysed with a scan line + detection box) and **Upload Image**
      (a real photo classified in-browser with TensorFlow.js COCO-SSD).
@@ -114,6 +120,7 @@ next 3 months, 12 months, or 2 years.
 6. **Diversion Metrics** (operations) — pick **Monthly/Annual** and a **month/year**;
    the chart shows **actual (solid) vs projected (dashed)** diversion with a
    Malaysian **seasonal pattern** (Hari Raya spike, monsoon dip), plus trend arrows.
+   Includes a **Hub Contribution Ranking** showing which hubs divert the most.
 7. **Financial Ledger** — benefit breakdown, operating surplus, ROI %, CapEx
    payback and a revenue/ROI forecast.
 8. **Logistics & Dispatch** — a **live simulation**: a clock (Play/Pause, speed

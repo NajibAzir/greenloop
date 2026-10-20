@@ -16,7 +16,7 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { useStore } from '../store/StoreContext.jsx'
-import { CATEGORIES, ECONOMICS } from '../data/catalog.js'
+import { CATEGORIES, ECONOMICS, COLLECTION_HUBS } from '../data/catalog.js'
 import { aggregate, formatRm, formatWeight, formatGP } from '../lib/engine.js'
 import {
   computeRoi,
@@ -104,6 +104,54 @@ function MaterialCharts({ byCategory, scale = 1 }) {
           </PieChart>
         </ResponsiveContainer>
       </div>
+    </div>
+  )
+}
+
+// Rank hubs by how much they've contributed (by weight), from ops transactions
+// that carry a hubId. Shows which hubs drive the township's diversion.
+function HubRanking({ transactions }) {
+  const totals = {}
+  for (const t of transactions) {
+    if (!t.hubId) continue
+    totals[t.hubId] = (totals[t.hubId] || 0) + t.totalWeight
+  }
+  const rows = COLLECTION_HUBS.map((h) => ({ id: h.id, name: h.name, kg: Math.round(totals[h.id] || 0) }))
+    .sort((a, b) => b.kg - a.kg)
+  const max = Math.max(1, ...rows.map((r) => r.kg))
+  const grand = rows.reduce((s, r) => s + r.kg, 0)
+  const medal = ['🥇', '🥈', '🥉']
+
+  if (grand === 0) {
+    return (
+      <div className="px-5 py-8 text-center text-sm text-slate-400">
+        No hub activity yet. Load demo data or record drop-offs.
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-2 px-5 py-4">
+      {rows.map((r, i) => (
+        <div key={r.id} className="flex items-center gap-3">
+          <span className="w-6 text-center text-sm">{medal[i] || `${i + 1}`}</span>
+          <span className="w-40 shrink-0 truncate text-sm font-medium text-slate-700" title={r.name}>
+            {r.name}
+          </span>
+          <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400"
+              style={{ width: `${(r.kg / max) * 100}%` }}
+            />
+          </div>
+          <span className="w-24 shrink-0 text-right text-xs tabular-nums text-slate-600">
+            {formatWeight(r.kg)}
+          </span>
+          <span className="w-12 shrink-0 text-right text-xs tabular-nums text-slate-400">
+            {Math.round((r.kg / grand) * 100)}%
+          </span>
+        </div>
+      ))}
     </div>
   )
 }
@@ -270,6 +318,15 @@ function DiversionMetrics() {
         <div className="px-5 py-4">
           <MaterialCharts byCategory={baseAgg.byCategory} scale={scope.materialScale} />
         </div>
+      </Card>
+
+      {/* Hub contribution ranking */}
+      <Card>
+        <CardHeader
+          title="Hub Contribution Ranking"
+          subtitle="Which hubs contribute most of the township's diverted waste"
+        />
+        <HubRanking transactions={state.opsTransactions} />
       </Card>
     </div>
   )

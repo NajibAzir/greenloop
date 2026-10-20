@@ -12,6 +12,7 @@ import { Card, CardHeader, Button, CategoryBadge, StreamBadge } from '../compone
 import ScanItem from '../components/ScanItem.jsx'
 import CameraScan from '../components/CameraScan.jsx'
 import VoucherModal from '../components/VoucherModal.jsx'
+import HubSession from '../components/HubSession.jsx'
 
 // -------------------------------------------------------------------------
 // GP balance card (shared header on resident pages)
@@ -58,6 +59,7 @@ function ScanAndDropoff() {
   const [lines, setLines] = useState([])
   const [result, setResult] = useState(null)
   const [mode, setMode] = useState('sim') // 'sim' | 'camera'
+  const [pairedHub, setPairedHub] = useState(null) // Smart Hub session (QR pairing)
 
   const acct = state.accountType // 'residence' | 'tenant'
   const capFor = (itemId) => dropoffCap(acct, itemId)
@@ -101,27 +103,50 @@ function ScanAndDropoff() {
     const dropped = []
     for (const { line, preview } of previews) {
       if (preview.quantity > 0) {
-        dispatch({ type: 'DROP_OFF', itemId: line.itemId, quantity: line.quantity })
+        // Attribute the drop-off to the paired hub so it feeds that hub's bin.
+        dispatch({ type: 'DROP_OFF', itemId: line.itemId, quantity: line.quantity, hubId: pairedHub?.id })
         dropped.push(preview)
       }
     }
     if (dropped.length === 0) return
     setResult({
       lines: dropped,
+      hubName: pairedHub?.name,
       totalGP: dropped.reduce((s, d) => s + d.tokensAwarded, 0),
       totalWeight: dropped.reduce((s, d) => s + d.totalWeight, 0),
       totalItems: dropped.reduce((s, d) => s + d.quantity, 0),
       at: Date.now(),
     })
+    // Clear the scanned items; keep the session open for more drop-offs.
+    setLines([])
+  }
+
+  function endSession() {
+    setPairedHub(null)
+    setLines([])
+    setResult(null)
+  }
+
+  // Before pairing with a hub, show only the GP balance + the QR session step.
+  if (!pairedHub) {
+    return (
+      <div className="space-y-5">
+        <GPBalance balance={account.tokenBalance} />
+        <HubSession pairedHub={null} onPaired={setPairedHub} onEnd={endSession} />
+      </div>
+    )
   }
 
   return (
-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <div className="space-y-5">
+      <HubSession pairedHub={pairedHub} onPaired={setPairedHub} onEnd={endSession} />
+
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       <GPBalance balance={account.tokenBalance} />
 
       <Card className="lg:row-span-2">
         <CardHeader
-          title="Step 2 — Drop at Smart Hub"
+          title="Step 3 — Drop at Smart Hub"
           subtitle="Unlocked only after the AI confirms a recyclable item"
         />
         <div className="space-y-4 px-5 py-4">
@@ -178,7 +203,7 @@ function ScanAndDropoff() {
           {result && (
             <div className="animate-fade-slide rounded-xl bg-green-50 p-4 ring-1 ring-green-200">
               <p className="text-sm font-semibold text-green-800">
-                ✅ Drop-off confirmed — {result.lines.length} material
+                ✅ Drop-off confirmed at {result.hubName} — {result.lines.length} material
                 {result.lines.length > 1 ? 's' : ''} graded
               </p>
               <div className="mt-3 grid grid-cols-3 gap-3 text-center">
@@ -202,7 +227,7 @@ function ScanAndDropoff() {
 
       <Card>
         <CardHeader
-          title="Step 1 — AI Recyclability Check"
+          title="Step 2 — AI Recyclability Check"
           subtitle="Computer vision verifies the item before it enters the hub"
           right={
             <div className="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold">
@@ -259,6 +284,7 @@ function ScanAndDropoff() {
           </div>
         </div>
       </Card>
+      </div>
     </div>
   )
 }
