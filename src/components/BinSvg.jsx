@@ -67,7 +67,7 @@ export default function BinSvg({ fills, open, scan, c2, linked, connecting, flag
     : 'SCAN QR TO START'
 
   return (
-    <svg viewBox="150 150 410 290" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: 'auto', display: 'block' }} role="img" aria-label="Smart recycling bin with QR link station">
+    <svg viewBox="0 0 660 440" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: 'auto', display: 'block' }} role="img" aria-label="Smart recycling bin with QR link station">
       <defs>
         <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2.6" result="b" />
