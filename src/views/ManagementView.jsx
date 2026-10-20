@@ -541,7 +541,7 @@ function FinancialLedger() {
       <Card>
         <CardHeader
           title="Model assumptions"
-          subtitle="Indicative Malaysian benchmarks (2024). Change these in src/data/catalog.js to re-run the case."
+          subtitle="Indicative Malaysian benchmarks (2024) used in this business case."
         />
         <div className="grid grid-cols-1 gap-px bg-slate-100 sm:grid-cols-2">
           {[
