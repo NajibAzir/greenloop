@@ -30,6 +30,12 @@ simulated client-side — no backend, no API keys required.
 ### Operations — Logistics & Dispatch (live clock, auto dispatch, road routing)
 ![Logistics & Dispatch](docs/screenshots/ops-logistics.png)
 
+### Operations — Smart Recycle Bin + QR Station (dark amber theme)
+![Smart Bin dark](docs/screenshots/recyclehub-dark.png)
+
+### Operations — Smart Recycle Bin (light green theme)
+![Smart Bin light](docs/screenshots/recyclehub-light.png)
+
 ---
 
 ## Run it
