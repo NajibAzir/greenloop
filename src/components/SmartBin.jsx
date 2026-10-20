@@ -289,14 +289,49 @@ export default function SmartBin({ hub, onBack }) {
           Scan the station QR to link your phone, then drop items. Tokens land in your app instantly. · Hub {code}
         </p>
 
-        {/* Isometric bin — capped so it doesn't dominate the console */}
-        <div className="mx-auto my-2 max-w-[560px]">
-          <BinSvg fills={fills} open={open} scan={scan} c2={c2} linked={linked} connecting={connecting}
-            flag={flag} alert={alert} pulse={pulse} tk={sessTk} resident={RESIDENT} code={code} dark={dark} />
-        </div>
+        {/* Bin on the LEFT, controls on the RIGHT — neat side-by-side layout */}
+        <div className="mt-3 grid gap-4 lg:grid-cols-2">
+          {/* LEFT: isometric bin + phone app */}
+          <div className="space-y-3 self-start">
+            <BinSvg fills={fills} open={open} scan={scan} c2={c2} linked={linked} connecting={connecting}
+              flag={flag} alert={alert} pulse={pulse} tk={sessTk} resident={RESIDENT} code={code} dark={dark} />
+            <div className={`rounded-[22px] p-4 ring-2 ${dark ? 'bg-[#141a23] ring-[#3b4656]' : 'bg-white ring-slate-300'}`}>
+              <p className="text-sm font-semibold">📱 Green Token app</p>
+              {!linked ? (
+                <>
+                  <p className={`my-4 text-sm ${T.mute}`}>
+                    {connecting ? `Connecting to station ${code}…` : 'Point your camera at the QR code on the station to start a session.'}
+                  </p>
+                  <p className={`text-xs ${T.mute}`}>Wallet</p>
+                  <p className="text-3xl font-bold" style={{ color: T.amb }}>{wallet.toLocaleString()}</p>
+                </>
+              ) : (
+                <>
+                  <p className={dark ? 'text-[#4be08a]' : 'text-green-600'}>● Linked to {code}</p>
+                  <p className={`text-xs ${T.mute}`}>{RESIDENT} · City of Elmina</p>
+                  <div className="mt-2 flex items-end justify-between">
+                    <div>
+                      <p className={`text-xs ${T.mute}`}>Wallet</p>
+                      <p className="text-3xl font-bold" style={{ color: T.amb }}>{wallet.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <p className={`mt-2 text-xs ${T.mute}`}>This session</p>
+                  {feed.length === 0 ? (
+                    <p className={`text-sm ${T.mute}`}>No drops yet</p>
+                  ) : (
+                    feed.map((e, i) => (
+                      <div key={i} className={`flex items-center justify-between border-b py-1.5 text-sm ${dark ? 'border-[#3b4656]' : 'border-slate-100'}`}>
+                        <span>{e.n}</span>
+                        <b className={dark ? 'text-[#4be08a]' : 'text-green-600'}>+{e.t}</b>
+                      </div>
+                    ))
+                  )}
+                </>
+              )}
+            </div>
+          </div>
 
-        <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
-          {/* controls */}
+          {/* RIGHT: controls */}
           <div>
             <div className="flex flex-wrap gap-2">
               <button onClick={scanQR} disabled={linked || connecting}
@@ -381,38 +416,6 @@ export default function SmartBin({ hub, onBack }) {
                 </table>
               </div>
             </div>
-          </div>
-
-          {/* phone */}
-          <div className={`rounded-[22px] p-4 ring-2 ${dark ? 'bg-[#141a23] ring-[#3b4656]' : 'bg-white ring-slate-300'}`}>
-            <p className="text-sm font-semibold">📱 Green Token app</p>
-            {!linked ? (
-              <>
-                <p className={`my-6 text-sm ${T.mute}`}>
-                  {connecting ? `Connecting to station ${code}…` : 'Point your camera at the QR code on the station to start a session.'}
-                </p>
-                <p className={`text-xs ${T.mute}`}>Wallet</p>
-                <p className="text-3xl font-bold" style={{ color: T.amb }}>{wallet.toLocaleString()}</p>
-              </>
-            ) : (
-              <>
-                <p className={dark ? 'text-[#4be08a]' : 'text-green-600'}>● Linked to {code}</p>
-                <p className={`text-xs ${T.mute}`}>{RESIDENT} · City of Elmina</p>
-                <p className={`mt-3 text-xs ${T.mute}`}>Wallet</p>
-                <p className="text-3xl font-bold" style={{ color: T.amb }}>{wallet.toLocaleString()}</p>
-                <p className={`mt-2 text-xs ${T.mute}`}>This session</p>
-                {feed.length === 0 ? (
-                  <p className={`text-sm ${T.mute}`}>No drops yet</p>
-                ) : (
-                  feed.map((e, i) => (
-                    <div key={i} className={`flex items-center justify-between border-b py-1.5 text-sm ${dark ? 'border-[#3b4656]' : 'border-slate-100'}`}>
-                      <span>{e.n}</span>
-                      <b className={dark ? 'text-[#4be08a]' : 'text-green-600'}>+{e.t}</b>
-                    </div>
-                  ))
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>
