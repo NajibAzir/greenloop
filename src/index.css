@@ -1,21 +1,1073 @@
 @import "tailwindcss";
 
-:root {
+/* ==========================================================================
+   Green themes + Silver-White Shining Cards
+   Each theme defines:
+   - body/content tokens (--gl-*) for page background, flat silver-white inner
+     surfaces, text, and green accents
+   - metallic card tokens (--gl-card-*) + theme-tinted shine (--gl-shine-tint)
+   - chrome tokens (--gl-chrome-*) for the bold coloured sidebar & header
+   ========================================================================== */
+
+:root,
+html[data-theme="emerald"] {
   color-scheme: light;
+  --gl-bg: #c9f2df;
+  --gl-bg-gradient: radial-gradient(circle at 0% 0%, #a7f3d0 0%, #d1fae5 40%, #ecfdf5 100%);
+  --gl-surface: #f8fafc;
+  --gl-surface-subtle: #e9eef5;
+  --gl-pill-bg: #dbe3ed;
+  --gl-hover-bg: #cbd5e1;
+  --gl-border: #94a3b8;
+  --gl-border-subtle: #cbd5e1;
+  --gl-text: #053d2e;
+  --gl-text-secondary: #065f46;
+  --gl-text-muted: #047857;
+  --gl-accent: #059669;
+  --gl-accent-hover: #047857;
+  --gl-accent-text: #047857;
+  --gl-accent-strong: #064e3b;
+  --gl-accent-soft: #d1fae5;
+  --gl-accent-border: #34d399;
+
+  --gl-card-bg: linear-gradient(155deg, #ffffff 0%, #f8fafc 55%, #eef2f6 100%);
+  --gl-card-border: #059669;
+  --gl-card-top-highlight: rgba(255, 255, 255, 1);
+  --gl-card-shadow:
+    0 10px 24px -4px rgba(5, 150, 105, 0.32),
+    0 4px 10px -2px rgba(6, 95, 70, 0.22);
+
+  --gl-sidebar-bg: linear-gradient(180deg, #022c22 0%, #047857 52%, #10b981 100%);
+  --gl-header-bg: linear-gradient(90deg, #022c22 0%, #047857 52%, #10b981 100%);
+  --gl-chrome-text: #ffffff;
+  --gl-chrome-text-2: #d1fae5;
+  --gl-chrome-muted: #a7f3d0;
+  --gl-chrome-surface: rgba(2, 44, 34, 0.38);
+  --gl-chrome-pill: rgba(2, 44, 34, 0.35);
+  --gl-chrome-hover: rgba(255, 255, 255, 0.14);
+  --gl-chrome-border: rgba(167, 243, 208, 0.35);
+  --gl-chrome-active-gradient: linear-gradient(135deg, rgba(16, 185, 129, 0.55) 0%, rgba(5, 150, 105, 0.35) 100%);
+  --gl-chrome-active-border: #6ee7b7;
+  --gl-chrome-active-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+  --gl-chrome-accent-text: #ffffff;
+  --gl-footer-btn-bg: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+  --gl-footer-btn-hover: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+}
+
+html[data-theme="classic"] {
+  color-scheme: light;
+  --gl-bg: #dcfce7;
+  --gl-bg-gradient: radial-gradient(circle at 0% 0%, #bbf7d0 0%, #dcfce7 45%, #f0fdf4 100%);
+  --gl-surface: #ffffff;
+  --gl-surface-subtle: #f1f5f9;
+  --gl-pill-bg: #e2e8f0;
+  --gl-hover-bg: #e2e8f0;
+  --gl-border: #cbd5e1;
+  --gl-border-subtle: #e2e8f0;
+  --gl-text: #14532d;
+  --gl-text-secondary: #166534;
+  --gl-text-muted: #15803d;
+  --gl-accent: #16a34a;
+  --gl-accent-hover: #15803d;
+  --gl-accent-text: #16a34a;
+  --gl-accent-strong: #14532d;
+  --gl-accent-soft: #dcfce7;
+  --gl-accent-border: #86efac;
+
+  --gl-card-bg: linear-gradient(155deg, #ffffff 0%, #f8fafc 55%, #eef2f6 100%);
+  --gl-card-border: #16a34a;
+  --gl-card-top-highlight: rgba(255, 255, 255, 1);
+  --gl-card-shadow:
+    0 10px 24px -4px rgba(22, 163, 74, 0.32),
+    0 4px 10px -2px rgba(21, 128, 61, 0.22);
+
+  --gl-sidebar-bg: linear-gradient(180deg, #14532d 0%, #16a34a 52%, #4ade80 100%);
+  --gl-header-bg: linear-gradient(90deg, #14532d 0%, #16a34a 52%, #4ade80 100%);
+  --gl-chrome-text: #ffffff;
+  --gl-chrome-text-2: #dcfce7;
+  --gl-chrome-muted: #bbf7d0;
+  --gl-chrome-surface: rgba(20, 83, 45, 0.42);
+  --gl-chrome-pill: rgba(20, 83, 45, 0.36);
+  --gl-chrome-hover: rgba(255, 255, 255, 0.16);
+  --gl-chrome-border: rgba(187, 247, 208, 0.4);
+  --gl-chrome-active-gradient: linear-gradient(135deg, rgba(34, 197, 94, 0.6) 0%, rgba(21, 128, 61, 0.4) 100%);
+  --gl-chrome-active-border: #bbf7d0;
+  --gl-chrome-active-shadow: 0 2px 10px rgba(22, 163, 74, 0.35);
+  --gl-chrome-accent-text: #ffffff;
+  --gl-footer-btn-bg: linear-gradient(135deg, #0f3f22 0%, #166534 100%);
+  --gl-footer-btn-hover: linear-gradient(135deg, #14532d 0%, #15803d 100%);
+}
+
+html[data-theme="mint"] {
+  color-scheme: light;
+  --gl-bg: #cfe5dc;
+  --gl-bg-gradient: radial-gradient(circle at 100% 0%, #b5dfd0 0%, #d5e8e0 50%, #e6f2ed 100%);
+  --gl-surface: #ffffff;
+  --gl-surface-subtle: #f1f5f9;
+  --gl-pill-bg: #e2e8f0;
+  --gl-hover-bg: #e2e8f0;
+  --gl-border: #cbd5e1;
+  --gl-border-subtle: #e2e8f0;
+  --gl-text: #134e4a;
+  --gl-text-secondary: #115e59;
+  --gl-text-muted: #0f766e;
+  --gl-accent: #0d9488;
+  --gl-accent-hover: #0f766e;
+  --gl-accent-text: #0f766e;
+  --gl-accent-strong: #134e4a;
+  --gl-accent-soft: #ccfbf1;
+  --gl-accent-border: #5eead4;
+
+  --gl-card-bg: linear-gradient(155deg, #ffffff 0%, #f8fafc 55%, #eef2f6 100%);
+  --gl-card-border: #0d9488;
+  --gl-card-top-highlight: rgba(255, 255, 255, 1);
+  --gl-card-shadow:
+    0 10px 24px -4px rgba(13, 148, 136, 0.32),
+    0 4px 10px -2px rgba(17, 94, 89, 0.22);
+
+  --gl-sidebar-bg: linear-gradient(180deg, #134e4a 0%, #0d9488 52%, #2dd4bf 100%);
+  --gl-header-bg: linear-gradient(90deg, #134e4a 0%, #0d9488 52%, #2dd4bf 100%);
+  --gl-chrome-text: #ffffff;
+  --gl-chrome-text-2: #ccfbf1;
+  --gl-chrome-muted: #99f6e4;
+  --gl-chrome-surface: rgba(19, 78, 74, 0.42);
+  --gl-chrome-pill: rgba(19, 78, 74, 0.36);
+  --gl-chrome-hover: rgba(255, 255, 255, 0.16);
+  --gl-chrome-border: rgba(153, 246, 228, 0.4);
+  --gl-chrome-active-gradient: linear-gradient(135deg, rgba(20, 184, 166, 0.58) 0%, rgba(15, 118, 110, 0.4) 100%);
+  --gl-chrome-active-border: #99f6e4;
+  --gl-chrome-active-shadow: 0 2px 10px rgba(13, 148, 136, 0.35);
+  --gl-chrome-accent-text: #ffffff;
+  --gl-footer-btn-bg: linear-gradient(135deg, #0d3b38 0%, #115e59 100%);
+  --gl-footer-btn-hover: linear-gradient(135deg, #134e4a 0%, #0f766e 100%);
+}
+
+html[data-theme="lime"] {
+  color-scheme: light;
+  --gl-bg: #e2f7b8;
+  --gl-bg-gradient: radial-gradient(circle at 0% 100%, #d9f99d 0%, #ecfccb 50%, #f7fee7 100%);
+  --gl-surface: #ffffff;
+  --gl-surface-subtle: #f1f5f9;
+  --gl-pill-bg: #e2e8f0;
+  --gl-hover-bg: #e2e8f0;
+  --gl-border: #cbd5e1;
+  --gl-border-subtle: #e2e8f0;
+  --gl-text: #2d4310;
+  --gl-text-secondary: #3f6212;
+  --gl-text-muted: #4d7c0f;
+  --gl-accent: #65a30d;
+  --gl-accent-hover: #4d7c0f;
+  --gl-accent-text: #4d7c0f;
+  --gl-accent-strong: #365314;
+  --gl-accent-soft: #ecfccb;
+  --gl-accent-border: #a3e635;
+
+  --gl-card-bg: linear-gradient(155deg, #ffffff 0%, #f8fafc 55%, #eef2f6 100%);
+  --gl-card-border: #65a30d;
+  --gl-card-top-highlight: rgba(255, 255, 255, 1);
+  --gl-card-shadow:
+    0 10px 24px -4px rgba(101, 163, 13, 0.34),
+    0 4px 10px -2px rgba(63, 98, 18, 0.22);
+
+  --gl-sidebar-bg: linear-gradient(180deg, #1a2e05 0%, #4d7c0f 52%, #84cc16 100%);
+  --gl-header-bg: linear-gradient(90deg, #1a2e05 0%, #4d7c0f 52%, #84cc16 100%);
+  --gl-chrome-text: #ffffff;
+  --gl-chrome-text-2: #ecfccb;
+  --gl-chrome-muted: #d9f99d;
+  --gl-chrome-surface: rgba(26, 46, 5, 0.44);
+  --gl-chrome-pill: rgba(26, 46, 5, 0.38);
+  --gl-chrome-hover: rgba(255, 255, 255, 0.15);
+  --gl-chrome-border: rgba(217, 249, 157, 0.4);
+  --gl-chrome-active-gradient: linear-gradient(135deg, rgba(132, 204, 22, 0.58) 0%, rgba(77, 124, 15, 0.42) 100%);
+  --gl-chrome-active-border: #d9f99d;
+  --gl-chrome-active-shadow: 0 2px 10px rgba(101, 163, 13, 0.38);
+  --gl-chrome-accent-text: #ffffff;
+  --gl-footer-btn-bg: linear-gradient(135deg, #1a2e05 0%, #365314 100%);
+  --gl-footer-btn-hover: linear-gradient(135deg, #274209 0%, #3f6212 100%);
+}
+
+html[data-theme="pine"] {
+  color-scheme: light;
+  --gl-bg: #d7f1e6;
+  --gl-bg-gradient: radial-gradient(circle at 0% 0%, #b3ebcf 0%, #dcf4ea 45%, #f2faf6 100%);
+  --gl-surface: #ffffff;
+  --gl-surface-subtle: #edf7f1;
+  --gl-pill-bg: #d8ece0;
+  --gl-hover-bg: #cde7d6;
+  --gl-border: #92c4aa;
+  --gl-border-subtle: #c2e2cf;
+  --gl-text: #022c22;
+  --gl-text-secondary: #064e3b;
+  --gl-text-muted: #047857;
+  --gl-accent: #064e3b;
+  --gl-accent-hover: #022c22;
+  --gl-accent-text: #064e3b;
+  --gl-accent-strong: #022c22;
+  --gl-accent-soft: #d1fae5;
+  --gl-accent-border: #10b981;
+
+  --gl-card-bg: linear-gradient(155deg, #ffffff 0%, #f7faf8 55%, #ecf5f0 100%);
+  --gl-card-border: #064e3b;
+  --gl-card-top-highlight: rgba(255, 255, 255, 1);
+  --gl-card-shadow:
+    0 10px 24px -4px rgba(6, 78, 59, 0.32),
+    0 4px 10px -2px rgba(2, 44, 34, 0.22);
+
+  --gl-sidebar-bg: linear-gradient(180deg, #022016 0%, #064e3b 52%, #059669 100%);
+  --gl-header-bg: linear-gradient(90deg, #022016 0%, #064e3b 52%, #059669 100%);
+  --gl-chrome-text: #ffffff;
+  --gl-chrome-text-2: #d1fae5;
+  --gl-chrome-muted: #a7f3d0;
+  --gl-chrome-surface: rgba(2, 32, 22, 0.42);
+  --gl-chrome-pill: rgba(2, 32, 22, 0.36);
+  --gl-chrome-hover: rgba(255, 255, 255, 0.16);
+  --gl-chrome-border: rgba(167, 243, 208, 0.38);
+  --gl-chrome-active-gradient: linear-gradient(135deg, rgba(16, 185, 129, 0.55) 0%, rgba(5, 150, 105, 0.35) 100%);
+  --gl-chrome-active-border: #6ee7b7;
+  --gl-chrome-active-shadow: 0 2px 10px rgba(6, 78, 59, 0.35);
+  --gl-chrome-accent-text: #ffffff;
+  --gl-footer-btn-bg: linear-gradient(135deg, #021a12 0%, #064e3b 100%);
+  --gl-footer-btn-hover: linear-gradient(135deg, #04291c 0%, #059669 100%);
+}
+
+html[data-theme="simedarby"] {
+  color-scheme: light;
+  --gl-bg: #f5f6f8;
+  --gl-bg-gradient: radial-gradient(circle at 10% 0%, #fff1f4 0%, #f6f7fa 45%, #eef0f4 100%);
+  --gl-surface: #ffffff;
+  --gl-surface-subtle: #f8fafc;
+  --gl-pill-bg: #eef1f5;
+  --gl-hover-bg: #e2e6ed;
+  --gl-border: #cbd5e1;
+  --gl-border-subtle: #f1f5f9;
+  --gl-text: #111827;
+  --gl-text-secondary: #374151;
+  --gl-text-muted: #6b7280;
+  --gl-accent: #d31245;
+  --gl-accent-hover: #b20838;
+  --gl-accent-text: #d31245;
+  --gl-accent-strong: #8a0c2c;
+  --gl-accent-soft: #fee2e8;
+  --gl-accent-border: transparent;
+
+  /* Sime Darby Property App: borderless crisp card with clean shadow */
+  --gl-card-bg: linear-gradient(155deg, #ffffff 0%, #fafbfc 60%, #f2f5f9 100%);
+  --gl-card-border: transparent;
+  --gl-card-top-highlight: rgba(255, 255, 255, 1);
+  --gl-card-shadow:
+    0 10px 24px -4px rgba(0, 0, 0, 0.08),
+    0 4px 10px -2px rgba(17, 24, 39, 0.04);
+
+  /* Sime Darby Property Mobile App Top Header & Sidebar Gradients */
+  --gl-sidebar-bg: linear-gradient(180deg, #180409 0%, #300814 42%, #620b1f 100%);
+  --gl-header-bg: linear-gradient(90deg, #8a0c2c 0%, #b20838 42%, #d31245 100%);
+  --gl-chrome-text: #ffffff;
+  --gl-chrome-text-2: #fecdd3;
+  --gl-chrome-muted: #fda4af;
+  --gl-chrome-surface: rgba(24, 4, 9, 0.45);
+  --gl-chrome-pill: rgba(24, 4, 9, 0.38);
+  --gl-chrome-hover: rgba(255, 255, 255, 0.16);
+  --gl-chrome-border: rgba(254, 205, 211, 0.32);
+  --gl-chrome-active-gradient: linear-gradient(135deg, #d31245 0%, #b20838 100%);
+  --gl-chrome-active-border: #f59e0b; /* PRIME loyalty gold accent */
+  --gl-chrome-active-shadow: 0 4px 14px rgba(211, 18, 69, 0.45);
+  --gl-chrome-accent-text: #fef3c7;
+  --gl-footer-btn-bg: linear-gradient(135deg, #300814 0%, #620b1f 100%);
+  --gl-footer-btn-hover: linear-gradient(135deg, #620b1f 0%, #d31245 100%);
+}
+
+/* ==========================================================================
+   Global Dark Mode overrides (activated via Light / Dark mode toggle)
+   ========================================================================== */
+html[data-color-mode="dark"] {
+  color-scheme: dark;
+  --gl-border-subtle: transparent !important;
+}
+
+html[data-color-mode="dark"][data-theme="emerald"] {
+  --gl-bg: #031c13;
+  --gl-bg-gradient: radial-gradient(circle at 20% 0%, #064e3b 0%, #031c13 60%, #01120b 100%);
+  --gl-surface: #0a2e20;
+  --gl-surface-subtle: #052016;
+  --gl-pill-bg: #041c13;
+  --gl-hover-bg: #0e3b2a;
+  --gl-border: #136647;
+  --gl-border-subtle: transparent;
+  --gl-text: #ecfdf5;
+  --gl-text-secondary: #a7f3d0;
+  --gl-text-muted: #6ee7b7;
+  --gl-accent: #10b981;
+  --gl-accent-hover: #059669;
+  --gl-accent-text: #34d399;
+  --gl-accent-strong: #d1fae5;
+  --gl-accent-soft: rgba(16, 185, 129, 0.2);
+  --gl-accent-border: #10b981;
+
+  --gl-card-bg: linear-gradient(155deg, #0d3525 0%, #07251a 100%);
+  --gl-card-border: #10b981;
+  --gl-card-top-highlight: rgba(167, 243, 208, 0.22);
+  --gl-card-shadow: 0 10px 26px -4px rgba(16, 185, 129, 0.35), 0 4px 12px -2px rgba(5, 150, 105, 0.26);
+}
+
+html[data-color-mode="dark"][data-theme="classic"] {
+  --gl-bg: #052012;
+  --gl-bg-gradient: radial-gradient(circle at 20% 0%, #14532d 0%, #052012 60%, #02120a 100%);
+  --gl-surface: #0d361f;
+  --gl-surface-subtle: #072615;
+  --gl-pill-bg: #052012;
+  --gl-hover-bg: #124628;
+  --gl-border: #1e7a43;
+  --gl-border-subtle: transparent;
+  --gl-text: #f0fdf4;
+  --gl-text-secondary: #bbf7d0;
+  --gl-text-muted: #86efac;
+  --gl-accent: #22c55e;
+  --gl-accent-hover: #16a34a;
+  --gl-accent-text: #4ade80;
+  --gl-accent-strong: #dcfce7;
+  --gl-accent-soft: rgba(34, 197, 94, 0.2);
+  --gl-accent-border: #22c55e;
+
+  --gl-card-bg: linear-gradient(155deg, #0f3d23 0%, #082917 100%);
+  --gl-card-border: #22c55e;
+  --gl-card-top-highlight: rgba(187, 247, 208, 0.22);
+  --gl-card-shadow: 0 10px 26px -4px rgba(34, 197, 94, 0.35), 0 4px 12px -2px rgba(22, 163, 74, 0.26);
+}
+
+html[data-color-mode="dark"][data-theme="mint"] {
+  --gl-bg: #042020;
+  --gl-bg-gradient: radial-gradient(circle at 20% 0%, #134e4a 0%, #042020 60%, #011313 100%);
+  --gl-surface: #0a3636;
+  --gl-surface-subtle: #062626;
+  --gl-pill-bg: #042020;
+  --gl-hover-bg: #0f4646;
+  --gl-border: #14726e;
+  --gl-border-subtle: transparent;
+  --gl-text: #f0fdfa;
+  --gl-text-secondary: #99f6e4;
+  --gl-text-muted: #5eead4;
+  --gl-accent: #2dd4bf;
+  --gl-accent-hover: #14b8a6;
+  --gl-accent-text: #2dd4bf;
+  --gl-accent-strong: #ccfbf1;
+  --gl-accent-soft: rgba(45, 212, 191, 0.2);
+  --gl-accent-border: #2dd4bf;
+
+  --gl-card-bg: linear-gradient(155deg, #0e3d3c 0%, #082a2a 100%);
+  --gl-card-border: #2dd4bf;
+  --gl-card-top-highlight: rgba(153, 246, 228, 0.22);
+  --gl-card-shadow: 0 10px 26px -4px rgba(45, 212, 191, 0.35), 0 4px 12px -2px rgba(13, 148, 136, 0.26);
+}
+
+html[data-color-mode="dark"][data-theme="lime"] {
+  --gl-bg: #142004;
+  --gl-bg-gradient: radial-gradient(circle at 20% 0%, #365314 0%, #142004 60%, #0b1301 100%);
+  --gl-surface: #223709;
+  --gl-surface-subtle: #162605;
+  --gl-pill-bg: #121e03;
+  --gl-hover-bg: #2d490c;
+  --gl-border: #4d7a12;
+  --gl-border-subtle: transparent;
+  --gl-text: #f7fee7;
+  --gl-text-secondary: #d9f99d;
+  --gl-text-muted: #bef264;
+  --gl-accent: #84cc16;
+  --gl-accent-hover: #65a30d;
+  --gl-accent-text: #a3e635;
+  --gl-accent-strong: #ecfccb;
+  --gl-accent-soft: rgba(132, 204, 22, 0.2);
+  --gl-accent-border: #84cc16;
+
+  --gl-card-bg: linear-gradient(155deg, #263e0b 0%, #172a06 100%);
+  --gl-card-border: #84cc16;
+  --gl-card-top-highlight: rgba(217, 249, 157, 0.22);
+  --gl-card-shadow: 0 10px 26px -4px rgba(132, 204, 22, 0.35), 0 4px 12px -2px rgba(101, 163, 13, 0.26);
+}
+
+html[data-color-mode="dark"][data-theme="pine"] {
+  --gl-bg: #041f14;
+  --gl-bg-gradient: radial-gradient(circle at 20% 0%, #064e3b 0%, #041f14 60%, #02140c 100%);
+  --gl-surface: #0c3523;
+  --gl-surface-subtle: #062417;
+  --gl-pill-bg: #052014;
+  --gl-hover-bg: #0d422b;
+  --gl-border: #166534;
+  --gl-border-subtle: transparent;
+  --gl-text: #ecfdf5;
+  --gl-text-secondary: #a7f3d0;
+  --gl-text-muted: #6ee7b7;
+  --gl-accent: #10b981;
+  --gl-accent-hover: #059669;
+  --gl-accent-text: #34d399;
+  --gl-accent-strong: #d1fae5;
+  --gl-accent-soft: rgba(16, 185, 129, 0.18);
+  --gl-accent-border: #10b981;
+
+  --gl-card-bg: linear-gradient(155deg, #0b3321 0%, #072619 100%);
+  --gl-card-border: #10b981;
+  --gl-card-top-highlight: rgba(167, 243, 208, 0.2);
+  --gl-card-shadow:
+    0 10px 26px -4px rgba(16, 185, 129, 0.36),
+    0 4px 12px -2px rgba(5, 150, 105, 0.28);
+}
+
+html[data-color-mode="dark"][data-theme="simedarby"] {
+  --gl-bg: #0c0e12;
+  --gl-bg-gradient: radial-gradient(circle at 20% 0%, #290812 0%, #12141c 55%, #080a0d 100%);
+  --gl-surface: #141720;
+  --gl-surface-subtle: #191d28;
+  --gl-pill-bg: #10131a;
+  --gl-hover-bg: #202432;
+  --gl-border: #2c3242;
+  --gl-border-subtle: transparent;
+  --gl-text: #f9fafb;
+  --gl-text-secondary: #d1d5db;
+  --gl-text-muted: #9ca3af;
+  --gl-accent: #f43f5e;
+  --gl-accent-hover: #e11d48;
+  --gl-accent-text: #fb7185;
+  --gl-accent-strong: #ffe4e6;
+  --gl-accent-soft: rgba(244, 63, 94, 0.2);
+  --gl-accent-border: transparent;
+
+  --gl-card-bg: linear-gradient(155deg, #171a24 0%, #11131a 100%);
+  --gl-card-border: transparent;
+  --gl-card-top-highlight: rgba(254, 205, 211, 0.14);
+  --gl-card-shadow:
+    0 10px 28px -4px rgba(0, 0, 0, 0.45),
+    0 4px 12px -2px rgba(8, 10, 14, 0.7);
+
+  --gl-sidebar-bg: linear-gradient(180deg, #100206 0%, #22050d 50%, #3d0714 100%);
+  --gl-header-bg: linear-gradient(90deg, #100206 0%, #28060f 50%, #4a0918 100%);
+  --gl-chrome-surface: rgba(16, 2, 6, 0.6);
+  --gl-chrome-pill: rgba(16, 2, 6, 0.45);
+  --gl-chrome-active-gradient: linear-gradient(135deg, rgba(244, 63, 94, 0.9) 0%, rgba(211, 18, 69, 0.7) 100%);
+  --gl-chrome-active-border: #f59e0b;
 }
 
 html,
 body,
 #root {
   height: 100%;
+  --font-sans: "Montserrat", "Source Sans 3", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
-  background-color: #f1f5f9;
-  color: #0f172a;
+  font-family: "Montserrat", "Source Sans 3", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--gl-bg);
+  background-image: var(--gl-bg-gradient);
+  color: var(--gl-text);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+input,
+select,
+textarea {
+  font-family: "Source Sans 3", "Montserrat", sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   Chrome (sidebar + header): Connected L-frame 3-stop gradients
+   Sidebar flows 180deg (top -> bottom), Header flows 90deg (left -> right).
+   -------------------------------------------------------------------------- */
+.gl-sidebar,
+.gl-header {
+  --gl-text: var(--gl-chrome-text);
+  --gl-text-secondary: var(--gl-chrome-text-2);
+  --gl-text-muted: var(--gl-chrome-muted);
+  --gl-surface: var(--gl-chrome-surface);
+  --gl-surface-subtle: var(--gl-chrome-surface);
+  --gl-pill-bg: var(--gl-chrome-pill);
+  --gl-hover-bg: var(--gl-chrome-hover);
+  --gl-border: var(--gl-chrome-border);
+  --gl-border-subtle: var(--gl-chrome-border);
+  --gl-accent-text: var(--gl-chrome-accent-text);
+  --gl-accent-border: var(--gl-chrome-active-border);
+  border-color: var(--gl-chrome-border);
+  color: var(--gl-chrome-text);
+  transition: background 0.3s ease;
+}
+
+.gl-sidebar {
+  background: var(--gl-sidebar-bg);
+}
+
+.gl-header {
+  position: relative;
+  z-index: 40;
+  background: var(--gl-header-bg);
+}
+
+/* Glowing gradient highlight on active buttons/pills inside Sidebar & Top Bar */
+html[data-theme] .gl-sidebar .bg-green-50,
+html[data-theme] .gl-sidebar .bg-white:not(.gl-footer-btn),
+html[data-theme] .gl-header .bg-white:not(.gl-theme-menu):not(.gl-theme-option) {
+  background: var(--gl-chrome-active-gradient) !important;
+  border: 1px solid var(--gl-chrome-active-border);
+  box-shadow: var(--gl-chrome-active-shadow);
+  --tw-ring-color: var(--gl-chrome-active-border);
+}
+
+/* Sidebar navigation buttons: smooth pre-click hover transition */
+html[data-theme] .gl-sidebar .gl-nav-btn {
+  position: relative;
+  border: 1px solid transparent;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme] .gl-sidebar .gl-nav-btn .gl-nav-icon {
+  color: var(--gl-chrome-text-2);
+  opacity: 0.9;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.2s ease,
+              filter 0.2s ease,
+              opacity 0.2s ease;
+}
+
+/* Hover preview state: metallic platinum silver glass before clicking */
+html[data-theme] .gl-sidebar .gl-nav-btn:hover:not(.gl-nav-btn-active) {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(226, 232, 240, 0.28) 40%,
+    rgba(203, 213, 225, 0.35) 75%,
+    rgba(248, 250, 252, 0.45) 100%
+  ) !important;
+  border-color: rgba(226, 232, 240, 0.65) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.4);
+  transform: translateX(4px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.25),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 1px 0 rgba(148, 163, 184, 0.35) !important;
+}
+
+html[data-theme] .gl-sidebar .gl-nav-btn:hover:not(.gl-nav-btn-active) .gl-nav-icon {
+  transform: scale(1.18);
+  color: #ffffff;
+  opacity: 1;
+  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.85));
+}
+
+html[data-theme] .gl-sidebar .gl-nav-btn:active {
+  transform: scale(0.97);
+}
+
+html[data-theme] .gl-sidebar .gl-nav-btn.gl-nav-btn-active {
+  transform: translateX(2px);
+}
+
+html[data-theme] .gl-sidebar .gl-nav-btn.gl-nav-btn-active .gl-nav-icon {
+  color: #ffffff;
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.95)) drop-shadow(0 0 2px #34d399);
+  transform: scale(1.12);
+}
+
+html[data-theme="simedarby"] .gl-sidebar .gl-nav-btn.gl-nav-btn-active .gl-nav-icon {
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.95)) drop-shadow(0 0 2px #d4af37) !important;
+}
+
+html[data-theme="simedarby"] .gl-sidebar .gl-nav-btn:hover:not(.gl-nav-btn-active) .gl-nav-icon {
+  filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.85)) !important;
+}
+
+/* Silver + Baby Blue Theme for Resident & Operations Persona Switcher (Sliding Pill) */
+.gl-mode-track {
+  background: linear-gradient(135deg, rgba(226, 232, 240, 0.22) 0%, rgba(186, 230, 253, 0.16) 100%) !important;
+  border: 1px solid rgba(226, 232, 240, 0.42) !important;
+  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.28), 0 1px 2px rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(10px);
+}
+
+html[data-theme] .gl-mode-switch-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #cbd5e1 !important;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme] .gl-mode-switch-btn:hover:not(.font-bold) {
+  color: #ffffff !important;
+}
+
+html[data-theme] .gl-mode-switch-btn:hover:not(.font-bold) svg {
+  color: #7dd3fc !important;
+  filter: drop-shadow(0 0 6px rgba(125, 211, 252, 0.6)) !important;
+}
+
+html[data-theme] .gl-mode-switch-btn.font-bold {
+  color: #0369a1 !important;
+}
+
+html[data-theme] .gl-mode-switch-btn.font-bold svg {
+  color: #0284c7 !important;
+  filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.85)) !important;
+}
+
+.gl-mode-active {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 22%, #e0f2fe 55%, #bae6fd 100%) !important;
+  border: 1px solid #7dd3fc !important;
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.45), 0 0 14px rgba(186, 230, 253, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Dark color mode support for Silver + Baby Blue */
+html[data-color-mode="dark"] .gl-mode-track,
+[data-theme-mode="dark"] .gl-mode-track {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.16) 0%, rgba(56, 189, 248, 0.14) 100%) !important;
+  border-color: rgba(186, 230, 253, 0.38) !important;
+}
+
+html[data-color-mode="dark"] .gl-mode-switch-btn.font-bold,
+[data-theme-mode="dark"] .gl-mode-switch-btn.font-bold {
+  color: #0c4a6e !important;
+}
+
+html[data-color-mode="dark"] .gl-mode-active,
+[data-theme-mode="dark"] .gl-mode-active {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 35%, #7dd3fc 100%) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.55), inset 0 1px 0 #ffffff !important;
+}
+
+/* Dark forest-green gradient footer buttons for high contrast against the bright sidebar bottom */
+html[data-theme] .gl-sidebar .gl-footer-btn {
+  background: var(--gl-footer-btn-bg) !important;
+  color: #ffffff !important;
+  --tw-ring-color: var(--gl-chrome-active-border) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+html[data-theme] .gl-sidebar .gl-footer-btn:hover {
+  background: var(--gl-footer-btn-hover) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Load Demo Data button:
+   - Before moving cursor: follows active theme gradient (var(--gl-footer-btn-bg)) with warm gold text accent
+   - Hover (cursor at the button): platinum silver + warm vibrant orange/yellow glass fusion
+   - Active/Clicked: exact vibrant orange + yellow with glow */
+html[data-theme] .gl-sidebar .gl-footer-btn-load {
+  background: var(--gl-footer-btn-bg) !important;
+  color: #fef08a !important;
+  --tw-ring-color: rgba(250, 204, 21, 0.75) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+}
+html[data-theme] .gl-sidebar .gl-footer-btn-load:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(249, 115, 22, 0.9) 20%,
+    rgba(245, 158, 11, 0.95) 60%,
+    rgba(234, 179, 8, 1) 100%
+  ) !important;
+  border-color: rgba(254, 240, 138, 0.9) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(120, 53, 15, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 6px 18px rgba(249, 115, 22, 0.45),
+    0 0 14px rgba(234, 179, 8, 0.4),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px 0 rgba(194, 65, 12, 0.4) !important;
+}
+html[data-theme] .gl-sidebar .gl-footer-btn-load:active,
+html[data-theme] .gl-sidebar .gl-footer-btn-load.gl-load-active {
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 35%, #eab308 100%) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --tw-ring-color: #fde047 !important;
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.65), 0 4px 12px rgba(234, 88, 12, 0.45) !important;
+  transform: scale(0.98);
+}
+
+/* Reset button:
+   - Before moving cursor: follows active theme gradient (var(--gl-footer-btn-bg)) with rose text accent
+   - Hover (cursor at the button): subtle platinum highlight + deep vibrant crimson/red
+   - Active/Clicked: exact vibrant red with glow */
+html[data-theme] .gl-sidebar .gl-footer-btn.text-red-600 {
+  color: #fda4af !important;
+  --tw-ring-color: rgba(251, 113, 133, 0.85) !important;
+}
+html[data-theme] .gl-sidebar .gl-footer-btn.text-red-600:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(225, 29, 72, 0.9) 20%,
+    rgba(220, 38, 38, 0.95) 60%,
+    rgba(185, 28, 28, 1) 100%
+  ) !important;
+  border-color: rgba(254, 205, 211, 0.9) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(136, 19, 55, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 6px 18px rgba(239, 68, 68, 0.45),
+    0 0 14px rgba(225, 29, 72, 0.4),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px 0 rgba(159, 18, 57, 0.4) !important;
+}
+html[data-theme] .gl-sidebar .gl-footer-btn.text-red-600:active,
+html[data-theme] .gl-sidebar .gl-footer-btn.gl-reset-active {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+  color: #ffffff !important;
+  --tw-ring-color: #fca5a5 !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.65), 0 4px 12px rgba(185, 28, 28, 0.45) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Cards (.gl-silver-card)
+   Clean silver-white surface, 2px solid theme-green outline,
+   inner highlight rim, and layered theme-green shadow.
+   -------------------------------------------------------------------------- */
+html[data-theme] .gl-silver-card,
+.gl-gp-banner {
+  opacity: 0.82;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+html[data-theme] .gl-silver-card {
+  background: var(--gl-card-bg) !important;
+  border: 2px solid var(--gl-card-border) !important;
+  box-shadow:
+    inset 0 1px 0 0 var(--gl-card-top-highlight),
+    var(--gl-card-shadow) !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* Disable the border line at the box for Sime Darby theme only (removes red line) */
+html[data-theme="simedarby"] .gl-silver-card,
+html[data-color-mode="dark"][data-theme="simedarby"] .gl-silver-card,
+html.dark[data-theme="simedarby"] .gl-silver-card,
+[data-theme-mode="dark"][data-theme="simedarby"] .gl-silver-card {
+  border: 1px solid transparent !important;
+  border-color: transparent !important;
+}
+
+/* ==========================================================================
+   Verdict Banner: 100% Opacity in Dark Mode for complete legibility
+   ========================================================================== */
+html[data-color-mode="dark"] .gl-verdict-banner,
+html.dark .gl-verdict-banner,
+[data-theme-mode="dark"] .gl-verdict-banner {
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* When operating surplus is positive */
+html[data-color-mode="dark"] .gl-verdict-banner.gl-box-pos,
+html.dark .gl-verdict-banner.gl-box-pos,
+[data-theme-mode="dark"] .gl-verdict-banner.gl-box-pos {
+  background-color: #032317 !important;
+  border: 1px solid #059669 !important;
+  color: #ecfdf5 !important;
+}
+
+html[data-color-mode="dark"] .gl-verdict-banner.gl-box-pos p:first-child,
+html.dark .gl-verdict-banner.gl-box-pos p:first-child,
+[data-theme-mode="dark"] .gl-verdict-banner.gl-box-pos p:first-child {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+}
+
+html[data-color-mode="dark"] .gl-verdict-banner.gl-box-pos p:last-child,
+html.dark .gl-verdict-banner.gl-box-pos p:last-child,
+[data-theme-mode="dark"] .gl-verdict-banner.gl-box-pos p:last-child {
+  color: #d1fae5 !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.4 !important;
+  opacity: 0.95 !important;
+}
+
+/* When operating volume is still ramping (amber) */
+html[data-color-mode="dark"] .gl-verdict-banner:not(.gl-box-pos),
+html.dark .gl-verdict-banner:not(.gl-box-pos),
+[data-theme-mode="dark"] .gl-verdict-banner:not(.gl-box-pos) {
+  background-color: #2b1705 !important;
+  border: 1px solid #d97706 !important;
+  color: #fef3c7 !important;
+}
+
+html[data-color-mode="dark"] .gl-verdict-banner:not(.gl-box-pos) p:first-child,
+html.dark .gl-verdict-banner:not(.gl-box-pos) p:first-child,
+[data-theme-mode="dark"] .gl-verdict-banner:not(.gl-box-pos) p:first-child {
+  color: #fbbf24 !important;
+  font-weight: 700 !important;
+}
+
+html[data-color-mode="dark"] .gl-verdict-banner:not(.gl-box-pos) p:last-child,
+html.dark .gl-verdict-banner:not(.gl-box-pos) p:last-child,
+[data-theme-mode="dark"] .gl-verdict-banner:not(.gl-box-pos) p:last-child {
+  color: #fde68a !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.4 !important;
+  opacity: 0.95 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Full-surface theme adaptation of Tailwind utilities
+   -------------------------------------------------------------------------- */
+html[data-theme] .bg-white:not(.gl-qr-box):not(.gl-silver-card) {
+  background-color: var(--gl-surface);
+}
+
+html[data-theme] .bg-slate-50 {
+  background-color: var(--gl-surface-subtle);
+}
+
+html[data-theme] .bg-slate-100 {
+  background-color: var(--gl-pill-bg);
+}
+
+html[data-theme] .hover\:bg-slate-50:hover,
+html[data-theme] .hover\:bg-slate-100:hover {
+  background-color: var(--gl-hover-bg);
+}
+
+html[data-theme] .border-slate-200,
+html[data-theme] .border-slate-300 {
+  border-color: var(--gl-border);
+}
+
+html[data-theme] .border-slate-100,
+html[data-theme] .border-slate-50 {
+  border-color: var(--gl-border-subtle);
+}
+
+html[data-theme] :where(.divide-slate-100 > :not(:last-child)),
+html[data-theme] :where(.divide-slate-200 > :not(:last-child)),
+html[data-theme] .divide-slate-100 > *,
+html[data-theme] .divide-slate-200 > *,
+html[data-theme] .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--gl-border-subtle);
+}
+
+html[data-theme] .ring-slate-200:not(.gl-silver-card),
+html[data-theme] .ring-slate-300 {
+  --tw-ring-color: var(--gl-border);
+}
+
+html[data-theme] .ring-slate-100 {
+  --tw-ring-color: var(--gl-border-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   Dark Mode internal border & divider elimination
+   Completely removes all internal horizontal lines, card header dividers,
+   and item separators across all 6 themes in dark mode.
+   Handles both Tailwind v4 (:not(:last-child)) and legacy divide patterns.
+   -------------------------------------------------------------------------- */
+html[data-color-mode="dark"] :where(.divide-y > :not(:last-child)),
+html.dark :where(.divide-y > :not(:last-child)),
+[data-theme-mode="dark"] :where(.divide-y > :not(:last-child)),
+html[data-color-mode="dark"] :where(.divide-slate-100 > :not(:last-child)),
+html.dark :where(.divide-slate-100 > :not(:last-child)),
+[data-theme-mode="dark"] :where(.divide-slate-100 > :not(:last-child)),
+html[data-color-mode="dark"] :where(.divide-slate-200 > :not(:last-child)),
+html.dark :where(.divide-slate-200 > :not(:last-child)),
+[data-theme-mode="dark"] :where(.divide-slate-200 > :not(:last-child)),
+html[data-color-mode="dark"] .divide-y > *,
+html.dark .divide-y > *,
+[data-theme-mode="dark"] .divide-y > *,
+html[data-color-mode="dark"] .divide-slate-100 > *,
+html.dark .divide-slate-100 > *,
+[data-theme-mode="dark"] .divide-slate-100 > *,
+html[data-color-mode="dark"] .divide-slate-200 > *,
+html.dark .divide-slate-200 > *,
+[data-theme-mode="dark"] .divide-slate-200 > *,
+html[data-color-mode="dark"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+[data-theme-mode="dark"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html[data-color-mode="dark"] .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+[data-theme-mode="dark"] .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+html[data-color-mode="dark"] .border-slate-100,
+html.dark .border-slate-100,
+[data-theme-mode="dark"] .border-slate-100,
+html[data-color-mode="dark"] .border-slate-50,
+html.dark .border-slate-50,
+[data-theme-mode="dark"] .border-slate-50,
+html[data-color-mode="dark"] .border-b.border-slate-100,
+html.dark .border-b.border-slate-100,
+[data-theme-mode="dark"] .border-b.border-slate-100,
+html[data-color-mode="dark"] .border-t.border-slate-100,
+html.dark .border-t.border-slate-100,
+[data-theme-mode="dark"] .border-t.border-slate-100,
+html[data-color-mode="dark"] .ring-slate-100,
+html.dark .ring-slate-100,
+[data-theme-mode="dark"] .ring-slate-100,
+html[data-color-mode="dark"] .gl-silver-card .border-b,
+html.dark .gl-silver-card .border-b,
+[data-theme-mode="dark"] .gl-silver-card .border-b,
+html[data-color-mode="dark"] .gl-silver-card .border-t,
+html.dark .gl-silver-card .border-t,
+[data-theme-mode="dark"] .gl-silver-card .border-t,
+html[data-color-mode="dark"] .gl-silver-card :where(.divide-y > *),
+html.dark .gl-silver-card :where(.divide-y > *),
+[data-theme-mode="dark"] .gl-silver-card :where(.divide-y > *),
+html[data-color-mode="dark"] .gl-silver-card .divide-y > :not([hidden]) ~ :not([hidden]),
+html.dark .gl-silver-card .divide-y > :not([hidden]) ~ :not([hidden]),
+[data-theme-mode="dark"] .gl-silver-card .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  border-top-width: 0 !important;
+  border-bottom-width: 0 !important;
+}
+
+html[data-theme] .text-slate-900,
+html[data-theme] .text-slate-800 {
+  color: var(--gl-text);
+}
+
+html[data-theme] .text-slate-700,
+html[data-theme] .text-slate-600 {
+  color: var(--gl-text-secondary);
+}
+
+html[data-theme] .text-slate-500,
+html[data-theme] .text-slate-400 {
+  color: var(--gl-text-muted);
+}
+
+html[data-theme] .hover\:text-slate-600:hover,
+html[data-theme] .hover\:text-slate-700:hover {
+  color: var(--gl-text);
+}
+
+html[data-theme] .bg-green-600 {
+  background-color: var(--gl-accent);
+}
+
+html[data-theme] .hover\:bg-green-700:hover {
+  background-color: var(--gl-accent-hover);
+}
+
+html[data-theme] .text-green-600:not(.gl-num-pos):not(.gl-stat-pos),
+html[data-theme] .text-green-700:not(.gl-num-pos):not(.gl-stat-pos) {
+  color: var(--gl-accent-text);
+}
+
+html[data-theme] .text-green-800 {
+  color: var(--gl-accent-strong);
+}
+
+html[data-theme] .bg-green-50,
+html[data-theme] .bg-green-100 {
+  background-color: var(--gl-accent-soft);
+}
+
+html[data-theme] .ring-green-200,
+html[data-theme] .border-green-200,
+html[data-theme] .border-green-500,
+html[data-theme] .ring-green-500 {
+  border-color: var(--gl-accent-border);
+  --tw-ring-color: var(--gl-accent-border);
+}
+
+html[data-theme] .accent-green-600 {
+  accent-color: var(--gl-accent);
+}
+
+/* Recharts tooltip adaptation */
+html[data-theme] .recharts-default-tooltip {
+  background-color: var(--gl-surface) !important;
+  border-color: var(--gl-border) !important;
+  border-radius: 0.625rem !important;
+  color: var(--gl-text) !important;
+}
+
+/* Recharts Tooltip in all Dark Themes: high-contrast dark slate card with bright white text & mint values */
+html[data-color-mode="dark"] .recharts-default-tooltip,
+html.dark .recharts-default-tooltip,
+[data-theme-mode="dark"] .recharts-default-tooltip {
+  background-color: #0b1120 !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-color-mode="dark"] .recharts-default-tooltip *,
+html.dark .recharts-default-tooltip *,
+[data-theme-mode="dark"] .recharts-default-tooltip *,
+html[data-color-mode="dark"] .recharts-tooltip-item,
+html.dark .recharts-tooltip-item,
+[data-theme-mode="dark"] .recharts-tooltip-item,
+html[data-color-mode="dark"] .recharts-tooltip-item-name,
+html.dark .recharts-tooltip-item-name,
+[data-theme-mode="dark"] .recharts-tooltip-item-name,
+html[data-color-mode="dark"] .recharts-tooltip-label,
+html.dark .recharts-tooltip-label,
+[data-theme-mode="dark"] .recharts-tooltip-label {
+  color: #f8fafc !important;
+}
+
+html[data-color-mode="dark"] .recharts-tooltip-item-value,
+html.dark .recharts-tooltip-item-value,
+[data-theme-mode="dark"] .recharts-tooltip-item-value {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   Recharts Chart Axes & Labels - Crisp White in Dark Themes for All
+   ========================================================================== */
+html[data-color-mode="dark"] .recharts-cartesian-axis-line,
+html.dark .recharts-cartesian-axis-line,
+[data-theme-mode="dark"] .recharts-cartesian-axis-line {
+  stroke: #ffffff !important;
+  stroke-opacity: 0.9 !important;
+}
+
+html[data-color-mode="dark"] .recharts-cartesian-axis-tick-line,
+html.dark .recharts-cartesian-axis-tick-line,
+[data-theme-mode="dark"] .recharts-cartesian-axis-tick-line {
+  stroke: #ffffff !important;
+  stroke-opacity: 0.9 !important;
+}
+
+html[data-color-mode="dark"] .recharts-cartesian-axis-tick-value,
+html[data-color-mode="dark"] .recharts-cartesian-axis text,
+html[data-color-mode="dark"] .recharts-cartesian-axis tspan,
+html.dark .recharts-cartesian-axis-tick-value,
+html.dark .recharts-cartesian-axis text,
+html.dark .recharts-cartesian-axis tspan,
+[data-theme-mode="dark"] .recharts-cartesian-axis-tick-value,
+[data-theme-mode="dark"] .recharts-cartesian-axis text,
+[data-theme-mode="dark"] .recharts-cartesian-axis tspan {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  opacity: 0.95 !important;
+}
+
+html[data-color-mode="dark"] .recharts-legend-item-text,
+html.dark .recharts-legend-item-text,
+[data-theme-mode="dark"] .recharts-legend-item-text {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+html[data-color-mode="dark"] .recharts-cartesian-grid line,
+html.dark .recharts-cartesian-grid line,
+[data-theme-mode="dark"] .recharts-cartesian-grid line {
+  stroke: rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Leaflet map container needs an explicit height */
@@ -23,6 +1075,7 @@ body {
   height: 100%;
   width: 100%;
   border-radius: 0.75rem;
+  z-index: 1 !important;
 }
 
 @keyframes pop {
@@ -54,4 +1107,954 @@ body {
 
 .animate-fade-slide {
   animation: fade-slide 0.3s ease-out;
+}
+
+/* Recycling loader animations */
+@keyframes gl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.gl-spin {
+  transform-origin: center;
+  animation: gl-spin 1.1s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+}
+
+@keyframes gl-halo {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+.gl-halo {
+  animation: gl-halo 1.2s ease-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   GreenLoop 3D Logo Loader (Breathing Pulse & Shimmer)
+   -------------------------------------------------------------------------- */
+@keyframes gl-logo-breathe {
+  0%, 100% {
+    transform: scale(0.98);
+    filter: drop-shadow(0 6px 16px rgba(5, 150, 105, 0.28)) brightness(1);
+  }
+  50% {
+    transform: scale(1.08) translateY(-3px);
+    filter: drop-shadow(0 14px 28px rgba(16, 185, 129, 0.55)) brightness(1.08);
+  }
+}
+
+.gl-logo-breathe {
+  transform-origin: center;
+  animation: gl-logo-breathe 1.2s ease-in-out infinite;
+}
+
+@keyframes gl-logo-breathe-mini {
+  0%, 100% {
+    transform: scale(0.92);
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+  }
+  50% {
+    transform: scale(1.16);
+    filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.75)) brightness(1.1);
+  }
+}
+
+.gl-logo-breathe-mini {
+  transform-origin: center;
+  animation: gl-logo-breathe-mini 0.85s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   GreenLoop Exact Hand-Drawn Flow Movement (from User Reference Video):
+   1. Bridge -> Right Loop (clockwise) -> Crossing -> Left Loop (anticlockwise)
+   2. Contrast silver metallic base starts, gets filled with rich 3D gradient
+   3. Climax: Signature sprouting leaf blooms organically on top of right loop
+   -------------------------------------------------------------------------- */
+
+@keyframes gl-stroke-flow {
+  0% {
+    stroke-dashoffset: 1140;
+  }
+  64% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.gl-stroke-flow {
+  stroke-dasharray: 1140;
+  animation: gl-stroke-flow 1.8s cubic-bezier(0.38, 0, 0.22, 1) infinite;
+}
+
+@keyframes gl-mask-full-reveal {
+  0%, 62% {
+    opacity: 0;
+  }
+  72%, 100% {
+    opacity: 1;
+  }
+}
+
+.gl-mask-full-reveal {
+  animation: gl-mask-full-reveal 1.8s cubic-bezier(0.38, 0, 0.22, 1) infinite;
+}
+
+@keyframes gl-leaf-pop-bloom {
+  0%, 60% {
+    transform: scale(0) rotate(-25deg);
+    opacity: 0;
+  }
+  74% {
+    transform: scale(1.26) rotate(6deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(74, 222, 128, 0.95)) brightness(1.22);
+  }
+  86% {
+    transform: scale(0.96) rotate(-2deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.8)) brightness(1.08);
+  }
+  94%, 100% {
+    transform: scale(1.0) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25)) brightness(1);
+  }
+}
+
+.gl-leaf-pop-bloom {
+  transform-origin: 4.35% 95.06%;
+  animation: gl-leaf-pop-bloom 1.8s cubic-bezier(0.2, 0.85, 0.25, 1) infinite;
+}
+
+.gl-loop-contrast-track {
+  filter: grayscale(100%) contrast(110%) brightness(1.15);
+  opacity: 0.32;
+}
+
+@keyframes gl-loader-float-gentle {
+  0%, 100% {
+    transform: translateY(0px) scale(0.98);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+.gl-loader-float-gentle {
+  animation: gl-loader-float-gentle 2.4s ease-in-out infinite;
+}
+
+/* Multi-ring atmospheric pulsating halo */
+@keyframes gl-halo-expand {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.gl-halo-ring-1 {
+  animation: gl-halo-expand 1.4s ease-out infinite;
+}
+
+.gl-halo-ring-2 {
+  animation: gl-halo-expand 1.4s ease-out 0.4s infinite;
+}
+
+/* Sidebar mini logo movement */
+@keyframes gl-logo-breathe-mini {
+  0% {
+    transform: scale(0.88);
+  }
+  50% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.85));
+  }
+  100% {
+    transform: scale(1.0);
+  }
+}
+
+.gl-logo-breathe-mini {
+  animation: gl-logo-breathe-mini 700ms cubic-bezier(0.2, 0.9, 0.3, 1) infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Signature Sprouting Leaf Bloom Animation
+   -------------------------------------------------------------------------- */
+@keyframes gl-leaf-bloom {
+  0%, 55% {
+    opacity: 0;
+    transform: scale(0.6) translate(6px, 6px);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1.15) translate(-1px, -1px);
+    filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.95));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translate(0, 0);
+    filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.7));
+  }
+}
+
+.gl-leaf-bloom {
+  transform-origin: 175px 48px;
+  animation: gl-leaf-bloom 700ms cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+}
+
+.gl-leaf-bloom-mini {
+  transform-origin: 175px 48px;
+  animation: gl-leaf-bloom 700ms cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl-spin,
+  .gl-halo {
+    animation-duration: 3s;
+  }
+  html[data-theme] .gl-silver-card::after {
+    animation-duration: 14s;
+  }
+}
+
+
+/* ==========================================================================
+   Yellow + Orange Switcher for Residence & Mall Tenant (Sliding Pill)
+   ========================================================================== */
+.gl-account-track {
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.75) 0%, rgba(255, 237, 213, 0.75) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  box-shadow: inset 0 1px 2px rgba(180, 83, 9, 0.08);
+}
+
+.gl-account-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #78350f !important;
+  font-weight: 600;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gl-account-btn:hover:not(.font-bold) {
+  color: #9a3412 !important;
+}
+
+.gl-account-btn:not(.font-bold) svg {
+  color: #d97706 !important;
+}
+
+.gl-account-btn.font-bold {
+  color: #ffffff !important;
+}
+
+.gl-account-btn.font-bold svg {
+  color: #ffffff !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)) !important;
+}
+
+.gl-account-active {
+  background: linear-gradient(135deg, #facc15 0%, #f59e0b 45%, #ea580c 100%) !important;
+  box-shadow: 0 2px 10px rgba(234, 88, 12, 0.38), 0 1px 2px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(253, 224, 71, 0.7) !important;
+}
+
+.gl-account-badge {
+  background: linear-gradient(135deg, #fef3c7 0%, #ffedd5 100%);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #ea580c;
+  box-shadow: 0 1px 3px rgba(234, 88, 12, 0.15);
+}
+
+/* Dark color mode support */
+html[data-color-mode="dark"] .gl-account-track,
+[data-theme-mode="dark"] .gl-account-track {
+  background: linear-gradient(135deg, rgba(69, 26, 3, 0.55) 0%, rgba(120, 53, 15, 0.45) 100%);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+html[data-color-mode="dark"] .gl-account-btn:not(.font-bold),
+[data-theme-mode="dark"] .gl-account-btn:not(.font-bold) {
+  color: #fde68a !important;
+}
+
+html[data-color-mode="dark"] .gl-account-btn:hover:not(.font-bold),
+[data-theme-mode="dark"] .gl-account-btn:hover:not(.font-bold) {
+  color: #fef08a !important;
+}
+
+html[data-color-mode="dark"] .gl-account-badge,
+[data-theme-mode="dark"] .gl-account-badge {
+  background: linear-gradient(135deg, rgba(120, 53, 15, 0.65) 0%, rgba(69, 26, 3, 0.75) 100%);
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #fbbf24;
+}
+
+
+/* ==========================================================================
+   Silver + Black Theme for AI Recyclability Check (Sliding Pill)
+   ========================================================================== */
+.gl-scan-track {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 55%, #cbd5e1 100%);
+  border: 1px solid #94a3b8;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.15), 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.gl-scan-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #334155 !important;
+  font-weight: 600;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.gl-scan-btn:hover:not(.font-bold) {
+  color: #0f172a !important;
+}
+
+.gl-scan-btn.font-bold {
+  color: #ffffff !important;
+}
+
+.gl-scan-active {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 45%, #000000 100%) !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Dark mode support */
+html[data-color-mode="dark"] .gl-scan-track,
+[data-theme-mode="dark"] .gl-scan-track {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border-color: #64748b;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+html[data-color-mode="dark"] .gl-scan-btn:not(.font-bold),
+[data-theme-mode="dark"] .gl-scan-btn:not(.font-bold) {
+  color: #cbd5e1 !important;
+}
+
+html[data-color-mode="dark"] .gl-scan-btn:hover:not(.font-bold),
+[data-theme-mode="dark"] .gl-scan-btn:hover:not(.font-bold) {
+  color: #ffffff !important;
+}
+
+html[data-color-mode="dark"] .gl-scan-active,
+[data-theme-mode="dark"] .gl-scan-active {
+  background: linear-gradient(135deg, #0f172a 0%, #000000 100%) !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 0 12px rgba(226, 232, 240, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+
+/* ==========================================================================
+   Silver Opaque Theme for Example Photo vs Upload Image (Sliding Pill)
+   ========================================================================== */
+.gl-silver-opaque-track {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+  border: 1px solid #94a3b8;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.18), 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.gl-silver-opaque-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #334155 !important;
+  font-weight: 600;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.gl-silver-opaque-btn:hover:not(.font-bold) {
+  color: #0f172a !important;
+}
+
+.gl-silver-opaque-btn.font-bold {
+  color: #0f172a !important;
+}
+
+.gl-silver-opaque-active {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 40%, #e2e8f0 100%) !important;
+  border: 1px solid #94a3b8 !important;
+  box-shadow: 0 2px 7px rgba(15, 23, 42, 0.22), inset 0 1px 0 #ffffff !important;
+}
+
+/* Dark mode support for Silver Opaque */
+html[data-color-mode="dark"] .gl-silver-opaque-track,
+[data-theme-mode="dark"] .gl-silver-opaque-track {
+  background: linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%);
+  border-color: #64748b;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+html[data-color-mode="dark"] .gl-silver-opaque-btn:not(.font-bold),
+[data-theme-mode="dark"] .gl-silver-opaque-btn:not(.font-bold) {
+  color: #cbd5e1 !important;
+}
+
+html[data-color-mode="dark"] .gl-silver-opaque-btn:hover:not(.font-bold),
+[data-theme-mode="dark"] .gl-silver-opaque-btn:hover:not(.font-bold) {
+  color: #ffffff !important;
+}
+
+html[data-color-mode="dark"] .gl-silver-opaque-active,
+[data-theme-mode="dark"] .gl-silver-opaque-active {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 #ffffff !important;
+}
+
+/* ==========================================================================
+   Management View Silver + Baby Blue Segmented Filters (Sliding Pill)
+   Matched to the Persona Switcher (Resident & Operations) silver + sky blue aesthetic.
+   ========================================================================== */
+.gl-mgmt-track {
+  background: linear-gradient(135deg, rgba(226, 232, 240, 0.45) 0%, rgba(186, 230, 253, 0.3) 100%) !important;
+  border: 1px solid rgba(186, 230, 253, 0.65) !important;
+  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12), 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(8px);
+}
+
+.gl-mgmt-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #475569 !important;
+  font-weight: 600;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.gl-mgmt-btn:hover:not(.font-bold) {
+  color: #0369a1 !important;
+}
+
+.gl-mgmt-btn.font-bold {
+  color: #0369a1 !important;
+}
+
+.gl-mgmt-active {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 22%, #e0f2fe 55%, #bae6fd 100%) !important;
+  border: 1px solid #7dd3fc !important;
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.45), 0 0 14px rgba(186, 230, 253, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Dark mode support for Silver + Baby Blue */
+html[data-color-mode="dark"] .gl-mgmt-track,
+[data-theme-mode="dark"] .gl-mgmt-track {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(12, 74, 110, 0.35) 100%) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-color-mode="dark"] .gl-mgmt-btn:not(.font-bold),
+[data-theme-mode="dark"] .gl-mgmt-btn:not(.font-bold) {
+  color: #94a3b8 !important;
+}
+
+html[data-color-mode="dark"] .gl-mgmt-btn:hover:not(.font-bold),
+[data-theme-mode="dark"] .gl-mgmt-btn:hover:not(.font-bold) {
+  color: #ffffff !important;
+}
+
+html[data-color-mode="dark"] .gl-mgmt-btn.font-bold,
+[data-theme-mode="dark"] .gl-mgmt-btn.font-bold {
+  color: #0c4a6e !important;
+}
+
+html[data-color-mode="dark"] .gl-mgmt-active,
+[data-theme-mode="dark"] .gl-mgmt-active {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 35%, #7dd3fc 100%) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.55), inset 0 1px 0 #ffffff !important;
+}
+
+
+/* ==========================================================================
+   White + Silver Infused Button (Choose Image)
+   Soft translucent idle state, dynamically appears and illuminates on cursor hover
+   ========================================================================== */
+.gl-btn-silver-white {
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(203, 213, 225, 0.7);
+  color: #64748b;
+  opacity: 0.82;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gl-btn-silver-white:hover {
+  opacity: 1 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 40%, #e2e8f0 100%) !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  border: 1px solid #94a3b8 !important;
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.35), 0 0 12px rgba(255, 255, 255, 0.95), inset 0 1px 0 #ffffff !important;
+  transform: translateY(-1px) scale(1.02);
+}
+
+.gl-btn-silver-white:hover svg {
+  color: #0f172a !important;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+}
+
+.gl-btn-silver-white:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Dark color mode support */
+html[data-color-mode="dark"] .gl-btn-silver-white,
+[data-theme-mode="dark"] .gl-btn-silver-white {
+  background: rgba(30, 41, 59, 0.55);
+  border-color: rgba(100, 116, 139, 0.5);
+  color: #94a3b8;
+  opacity: 0.8;
+}
+
+html[data-color-mode="dark"] .gl-btn-silver-white:hover,
+[data-theme-mode="dark"] .gl-btn-silver-white:hover {
+  opacity: 1 !important;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 45%, #cbd5e1 100%) !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55), 0 0 14px rgba(255, 255, 255, 0.45), inset 0 1px 0 #ffffff !important;
+}
+
+
+/* ==========================================================================
+   Start Camera Button - Pure Default Green Theme (No Silver)
+   ========================================================================== */
+.gl-btn-camera {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gl-btn-camera:hover:not(:disabled) {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 45%, #059669 100%) !important;
+  border-color: #34d399 !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(4, 120, 87, 0.45);
+  box-shadow:
+    0 6px 20px rgba(16, 185, 129, 0.5),
+    0 0 14px rgba(52, 211, 153, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  transform: translateY(-1px) scale(1.015);
+}
+
+.gl-btn-camera:hover:not(:disabled) svg {
+  color: #ffffff !important;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
+}
+
+.gl-btn-camera:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.gl-btn-camera-stop {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gl-btn-camera-stop:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #fee2e2 50%, #fecaca 100%) !important;
+  border-color: #f87171 !important;
+  color: #b91c1c !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25), inset 0 1px 0 #ffffff !important;
+  transform: translateY(-1px) scale(1.015);
+}
+
+/* Dark mode support */
+html[data-color-mode="dark"] .gl-btn-camera,
+[data-theme-mode="dark"] .gl-btn-camera {
+  background: linear-gradient(135deg, #059669 0%, #047857 60%, #064e3b 100%);
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+html[data-color-mode="dark"] .gl-btn-camera:hover:not(:disabled),
+[data-theme-mode="dark"] .gl-btn-camera:hover:not(:disabled) {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
+  border-color: #34d399 !important;
+  box-shadow:
+    0 6px 20px rgba(5, 150, 105, 0.6),
+    0 0 16px rgba(52, 211, 153, 0.4) !important;
+}
+
+html[data-color-mode="dark"] .gl-btn-camera-stop,
+[data-theme-mode="dark"] .gl-btn-camera-stop {
+  background: #1e293b;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+html[data-color-mode="dark"] .gl-btn-camera-stop:hover,
+[data-theme-mode="dark"] .gl-btn-camera-stop:hover {
+  background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%) !important;
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+}
+
+
+/* ==========================================================================
+   Prevent Browser Caret Browsing (F7) cursor from blinking on static text
+   ========================================================================== */
+*:not(input):not(textarea):not([contenteditable="true"]) {
+  caret-color: transparent;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  caret-color: auto;
+}
+
+
+/* ==========================================================================
+   Executive Modern Sidebar Toggle Button (.gl-sidebar-toggle)
+   ========================================================================== */
+.gl-sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.gl-sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.26) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.gl-sidebar-toggle:active {
+  transform: translateY(0) scale(0.96);
+  background: rgba(255, 255, 255, 0.22) !important;
+}
+
+.gl-sidebar-toggle.is-open {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.36) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.gl-sidebar-toggle.is-collapsed {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  opacity: 0.9;
+}
+
+.gl-sidebar-toggle.is-collapsed:hover {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Header Theme Selector Dropdown (5 Themes)
+   ========================================================================== */
+.gl-theme-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.gl-theme-trigger-btn:hover {
+  background: rgba(255, 255, 255, 0.26) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.gl-theme-trigger-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.gl-theme-trigger-btn[aria-expanded="true"] {
+  background: rgba(255, 255, 255, 0.32) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.gl-theme-menu {
+  z-index: 100 !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.22), 0 10px 18px -5px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+}
+
+html[data-color-mode="dark"] .gl-theme-menu,
+[data-theme-mode="dark"] .gl-theme-menu {
+  background: #0f172a !important;
+  border: 1px solid rgba(52, 211, 153, 0.28) !important;
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.7), 0 0 24px rgba(16, 185, 129, 0.18) !important;
+}
+
+.gl-theme-option {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: #1e293b !important;
+  transition: all 0.15s ease;
+}
+
+.gl-theme-option:hover:not(.gl-theme-option-active) {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+html[data-color-mode="dark"] .gl-theme-option,
+[data-theme-mode="dark"] .gl-theme-option {
+  color: #f8fafc !important;
+}
+
+html[data-color-mode="dark"] .gl-theme-option:hover:not(.gl-theme-option-active),
+[data-theme-mode="dark"] .gl-theme-option:hover:not(.gl-theme-option-active) {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+}
+
+.gl-theme-option-active {
+  background: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.12) !important;
+}
+
+html[data-color-mode="dark"] .gl-theme-option-active,
+[data-theme-mode="dark"] .gl-theme-option-active {
+  background: rgba(6, 78, 59, 0.45) !important;
+  border-color: rgba(52, 211, 153, 0.5) !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* ==========================================================================
+   Strict Universal Financial & Functional Semantics
+   Positive values (+) are invariant GREEN; Negative values (-) are invariant RED.
+   Completely immune to theme accent overrides across all Green & Red themes.
+   ========================================================================== */
+:root {
+  --gl-semantic-pos: #15803d;             /* Semantic Green text */
+  --gl-semantic-pos-bg: #dcfce7;          /* Semantic Green soft badge bg */
+  --gl-semantic-pos-border: #86efac;      /* Semantic Green badge border */
+  --gl-semantic-neg: #dc2626;             /* Semantic Red text */
+  --gl-semantic-neg-bg: #fee2e2;          /* Semantic Red soft badge bg */
+  --gl-semantic-neg-border: #fca5a5;      /* Semantic Red badge border */
+}
+
+html[data-color-mode="dark"],
+[data-theme-mode="dark"] {
+  --gl-semantic-pos: #34d399;             /* Luminous Mint Green text in dark mode */
+  --gl-semantic-pos-bg: rgba(16, 185, 129, 0.2);
+  --gl-semantic-pos-border: rgba(52, 211, 153, 0.4);
+  --gl-semantic-neg: #f87171;             /* Luminous Coral Red text in dark mode */
+  --gl-semantic-neg-bg: rgba(239, 68, 68, 0.2);
+  --gl-semantic-neg-border: rgba(248, 113, 113, 0.4);
+}
+
+/* Force invariant polarity styles with !important to overpower any [data-theme] rules */
+.gl-num-pos,
+.gl-stat-pos,
+html[data-theme] .gl-num-pos,
+html[data-theme] .gl-stat-pos {
+  color: var(--gl-semantic-pos) !important;
+}
+
+.gl-num-neg,
+.gl-stat-neg,
+html[data-theme] .gl-num-neg,
+html[data-theme] .gl-stat-neg {
+  color: var(--gl-semantic-neg) !important;
+}
+
+.gl-badge-pos,
+html[data-theme] .gl-badge-pos {
+  color: var(--gl-semantic-pos) !important;
+  background-color: var(--gl-semantic-pos-bg) !important;
+  border: 1px solid var(--gl-semantic-pos-border) !important;
+}
+
+.gl-badge-neg,
+html[data-theme] .gl-badge-neg {
+  color: var(--gl-semantic-neg) !important;
+  background-color: var(--gl-semantic-neg-bg) !important;
+  border: 1px solid var(--gl-semantic-neg-border) !important;
+}
+
+.gl-box-pos,
+html[data-theme] .gl-box-pos {
+  background-color: var(--gl-semantic-pos-bg) !important;
+  border-color: var(--gl-semantic-pos-border) !important;
+  --tw-ring-color: var(--gl-semantic-pos-border) !important;
+}
+
+.gl-box-neg,
+html[data-theme] .gl-box-neg {
+  background-color: var(--gl-semantic-neg-bg) !important;
+  border-color: var(--gl-semantic-neg-border) !important;
+  --tw-ring-color: var(--gl-semantic-neg-border) !important;
+}
+
+/* ==========================================================================
+   Leaflet Fleet Dispatch Map & Lorry Navigation Styling (Dark & Light)
+   ========================================================================== */
+@keyframes gl-truck-radar {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.85;
+  }
+  65% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
+}
+
+.gl-truck-pulse {
+  animation: gl-truck-radar 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* Ensure map container dark mode background matches the theme */
+html[data-color-mode="dark"] .leaflet-container,
+html.dark .leaflet-container {
+  background: #0b0f17 !important;
+}
+
+/* Zoom controls in dark mode */
+html[data-color-mode="dark"] .leaflet-bar a,
+html.dark .leaflet-bar a {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+html[data-color-mode="dark"] .leaflet-bar a:hover,
+html.dark .leaflet-bar a:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+/* Attribution bar in dark mode */
+html[data-color-mode="dark"] .leaflet-control-attribution,
+html.dark .leaflet-control-attribution {
+  background-color: rgba(15, 23, 42, 0.88) !important;
+  color: #94a3b8 !important;
+}
+
+html[data-color-mode="dark"] .leaflet-control-attribution a,
+html.dark .leaflet-control-attribution a {
+  color: #38bdf8 !important;
+}
+
+/* Popups and Tooltips in dark mode */
+html[data-color-mode="dark"] .leaflet-popup-content-wrapper,
+html.dark .leaflet-popup-content-wrapper {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+}
+
+html[data-color-mode="dark"] .leaflet-popup-tip,
+html.dark .leaflet-popup-tip {
+  background-color: #0f172a !important;
+}
+
+html[data-color-mode="dark"] .leaflet-tooltip,
+html.dark .leaflet-tooltip {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-color-mode="dark"] .leaflet-tooltip-top:before,
+html.dark .leaflet-tooltip-top:before {
+  border-top-color: #0f172a !important;
+}
+
+/* ==========================================================================
+   Translucent Township Backdrop (City of Elmina - Sime Darby Property)
+   Applies across all themes, providing an inspiring biophilic township canvas.
+   ========================================================================== */
+.gl-simedarby-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("/simedarby-bg.jpg");
+  background-size: cover;
+  background-position: center 65%;
+  background-repeat: no-repeat;
+  opacity: 0.25;
+  visibility: visible;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+  mask-image: radial-gradient(ellipse 95% 85% at 50% 45%, black 45%, rgba(0, 0, 0, 0.65) 75%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 95% 85% at 50% 45%, black 45%, rgba(0, 0, 0, 0.65) 75%, transparent 100%);
+  filter: contrast(1.1) saturate(1.2);
+}
+
+html[data-color-mode="dark"] .gl-simedarby-bg,
+html.dark .gl-simedarby-bg,
+[data-theme-mode="dark"] .gl-simedarby-bg {
+  opacity: 0.36;
+  visibility: visible;
+  filter: brightness(1.15) contrast(1.2) saturate(1.25);
 }
