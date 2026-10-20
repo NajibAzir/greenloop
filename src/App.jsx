@@ -521,6 +521,15 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2.5">
+            {/* Honest reminder that on-screen figures are simulated demo data */}
+            {state.opsTransactions.length > 0 && (
+              <span
+                className="hidden items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-200 sm:inline-flex"
+                title="All figures shown are simulated demo data, not live operations."
+              >
+                ● Demo data
+              </span>
+            )}
             <ThemeSwitcher />
           </div>
         </header>

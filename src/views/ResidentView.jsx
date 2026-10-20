@@ -319,11 +319,17 @@ function RedeemVouchers() {
                     {v.emoji} {formatRm(v.value)} {v.name}
                   </p>
                   <p className="text-xs text-slate-500">{formatGP(v.costTokens)}</p>
+                  {!affordable && (
+                    <p className="mt-0.5 text-[11px] font-medium text-amber-600">
+                      Need {formatGP(v.costTokens - account.tokenBalance)} more
+                    </p>
+                  )}
                 </div>
                 <Button
                   variant={affordable ? 'primary' : 'secondary'}
                   disabled={!affordable}
                   onClick={() => dispatch({ type: 'REDEEM_VOUCHER', voucherId: v.id })}
+                  title={affordable ? 'Redeem this voucher' : 'Not enough Green Points yet'}
                 >
                   Redeem
                 </Button>

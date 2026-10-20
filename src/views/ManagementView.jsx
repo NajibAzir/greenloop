@@ -16,7 +16,7 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { useStore } from '../store/StoreContext.jsx'
-import { CATEGORIES, ECONOMICS, COLLECTION_HUBS } from '../data/catalog.js'
+import { CATEGORIES, ECONOMICS, COLLECTION_HUBS, MATERIAL_RATES, TOKEN_TO_RM } from '../data/catalog.js'
 import { aggregate, formatRm, formatWeight, formatGP } from '../lib/engine.js'
 import {
   computeRoi,
@@ -359,15 +359,29 @@ const HORIZONS = [
   { months: 24, label: 'Next 2 years' },
 ]
 
-function BenefitRow({ label, value, note, sign = '+' }) {
+// `kind`: 'cash' = real money received/paid, 'estimate' = avoided-cost / notional
+// value recognised for ROI but not a bank movement. Tagging the two keeps the
+// business case honest about which benefits are actual cash.
+function BenefitRow({ label, value, note, sign = '+', kind }) {
   const positive = sign === '+'
+  const tag =
+    kind === 'cash'
+      ? { text: 'cash', cls: 'bg-green-100 text-green-700' }
+      : kind === 'estimate'
+      ? { text: 'estimated', cls: 'bg-slate-100 text-slate-500' }
+      : null
   return (
     <div className="flex items-center justify-between px-4 py-2">
-      <div>
+      <div className="min-w-0">
         <span className="text-sm text-slate-700">{label}</span>
+        {tag && (
+          <span className={`ml-1.5 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${tag.cls}`}>
+            {tag.text}
+          </span>
+        )}
         {note && <span className="ml-1 text-xs text-slate-400">{note}</span>}
       </div>
-      <span className={`text-sm font-semibold tabular-nums ${positive ? 'gl-num-pos text-green-600' : 'text-slate-900'}`}>
+      <span className={`shrink-0 text-sm font-semibold tabular-nums ${positive ? 'gl-num-pos text-green-600' : 'text-slate-900'}`}>
         {sign} {formatRm(value)}
       </span>
     </div>
@@ -404,7 +418,7 @@ function FinancialLedger() {
           value={fc.paybackMonth ? `${fc.paybackMonth} mo` : '—'}
           sub={`setup ${formatRm(roi.capex)}`}
         />
-        <Stat label="Diverted" value={formatWeight(roi.kg)} sub="from landfill" accent="text-green-600" />
+        <Stat label="Diverted (to date)" value={formatWeight(roi.kg)} sub="total collected" accent="text-green-600" />
       </div>
 
       {/* Benefit vs cost breakdown */}
@@ -412,16 +426,17 @@ function FinancialLedger() {
         <Card>
           <CardHeader
             title="Where the value comes from"
-            subtitle="Avoided haulage is the biggest driver — not scrap sales alone"
+            subtitle="Commodity sales are real cash; avoided haulage and carbon are estimated (non-cash) value"
           />
           <div className="divide-y divide-slate-100 py-1">
             <BenefitRow
               label="Avoided landfill & haulage"
               note={`@ RM${ECONOMICS.avoidedHaulageRmPerTonne}/t`}
               value={roi.avoidedHaulage}
+              kind="estimate"
             />
-            <BenefitRow label="Bulk commodity sales" note="direct-to-recycler" value={roi.commoditySales} />
-            <BenefitRow label="Carbon / ESG value" note={`@ RM${ECONOMICS.carbonRmPerTonneCo2}/t CO₂`} value={roi.carbonValue} />
+            <BenefitRow label="Bulk commodity sales" note="direct-to-recycler" value={roi.commoditySales} kind="cash" />
+            <BenefitRow label="Carbon / ESG value" note={`@ RM${ECONOMICS.carbonRmPerTonneCo2}/t CO₂`} value={roi.carbonValue} kind="estimate" />
             <div className="gl-box-pos flex items-center justify-between bg-green-50 px-4 py-2">
               <span className="gl-num-pos text-sm font-semibold text-green-800">Total benefit</span>
               <span className="gl-num-pos text-sm font-bold tabular-nums text-green-700">{formatRm(roi.totalBenefit)}</span>
@@ -519,6 +534,42 @@ function FinancialLedger() {
             The cumulative line starts below zero by the one-time setup cost and crosses break-even where the hub has
             fully paid for itself; everything above the line is net return to the property developer.
           </p>
+        </div>
+      </Card>
+
+      {/* Model assumptions — every figure the ROI depends on, stated openly */}
+      <Card>
+        <CardHeader
+          title="Model assumptions"
+          subtitle="Indicative Malaysian benchmarks (2024). Change these in src/data/catalog.js to re-run the case."
+        />
+        <div className="grid grid-cols-1 gap-px bg-slate-100 sm:grid-cols-2">
+          {[
+            ['Avoided landfill & haulage', `RM ${ECONOMICS.avoidedHaulageRmPerTonne} / tonne diverted`],
+            ['Carbon / ESG value', `RM ${ECONOMICS.carbonRmPerTonneCo2} / tonne CO₂e`],
+            ['Hub operating cost (opex)', `${formatRm(ECONOMICS.hubOpexPerMonth)} / month`],
+            ['One-time setup (CapEx)', formatRm(ECONOMICS.hubCapex)],
+            ['Green Point value', `${formatRm(TOKEN_TO_RM)} per GP (${Math.round(1 / TOKEN_TO_RM)} GP = RM 1)`],
+            ['GP redemption rate', `${Math.round(ECONOMICS.gpRedemptionRate * 100)}% of issued GP redeemed for cash`],
+            ['Assumed volume growth', `${Math.round(ECONOMICS.monthlyGrowthRate * 100)}% per month`],
+          ].map(([k, v]) => (
+            <div key={k} className="flex items-center justify-between gap-3 bg-white px-4 py-2.5 text-sm">
+              <span className="text-slate-600">{k}</span>
+              <span className="text-right font-medium tabular-nums text-slate-800">{v}</span>
+            </div>
+          ))}
+        </div>
+        <div className="border-t border-slate-100 px-4 py-3">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Bulk commodity price per material (sold to recyclers)
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(MATERIAL_RATES).map(([mat, r]) => (
+              <span key={mat} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-600">
+                {CATEGORIES[mat]?.label || mat}: <span className="font-semibold text-slate-800">RM {r.bulkRmPerKg}/kg</span>
+              </span>
+            ))}
+          </div>
         </div>
       </Card>
     </div>

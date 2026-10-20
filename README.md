@@ -165,6 +165,37 @@ npm test          # run the Vitest unit tests
 
 ---
 
+## 🏙️ Piloting with Sime Darby Property
+
+GreenLoop is designed to start small and prove itself before any township-wide
+rollout.
+
+**Pilot at one location first.** Deploy a single Smart Hub at one precinct, for
+example **Elmina West** in the City of Elmina, or one retail bin-bank at **Elmina
+Lakeside Mall**. Run it for one quarter, measure real diversion, participation and
+cost, and compare the actual numbers against this model's assumptions.
+
+**What this prototype demonstrates vs. what it simulates.** The flows, UX,
+dispatch logic and economic model are real and interactive, but the figures are an
+**indicative model**, not live data. Before a real deployment the following need to
+be integrated and validated:
+
+- **Hardware** — real reverse-vending / smart-bin units and camera CV in place of
+  the simulated scan and bin sensors.
+- **Avoided-cost assumption** — confirm the **RM 230/tonne** avoided haulage figure
+  against Sime Darby Property's actual waste-contractor tipping and haulage rates.
+- **Commodity prices** — validate the per-material buyback rates against current
+  recycler contracts (prices move with the market).
+- **Reward redemption** — integrate Green Points with mall-tenant POS / the
+  township app, and confirm the real redemption rate (modelled at 65%).
+- **Resident identity** — link accounts to township residency / tenancy, with
+  data-privacy (PDPA) handling for personal and activity data.
+- **Operations** — connect live bin-fill telemetry and the real collection fleet to
+  replace the simulated dispatch clock.
+
+Once validated at one hub, the same model scales precinct by precinct — the return
+compounds as participation grows.
+
 ## 🧱 How it works (under the hood)
 
 **Green Points** are granted by material and weight: each material has a GP-per-kg

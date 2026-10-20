@@ -59,8 +59,12 @@ export default function HubStatView() {
   const selDay = Math.min(dayNum, daysInSelMonth)
 
   const agg = useMemo(() => aggregate(state.opsTransactions), [state.opsTransactions])
-  const baseKg = agg.totalWeight || 10905 // CURRENT monthly township weight (now)
-  const baseGP = agg.totalTokens || 75860
+  // Base off the ACTUAL ops data so Hub Stat reconciles with Diversion Metrics
+  // and Hub Economics. No hardcoded fallback: with no demo data loaded, every
+  // operator page reads zero consistently (rather than Hub Stat inventing
+  // ~10,905 kg while the other pages show nothing).
+  const baseKg = agg.totalWeight // current monthly township weight (now)
+  const baseGP = agg.totalTokens
 
   // Normalised per-hub shares, derived from the live hub count (stays in sync).
   const weights = useMemo(() => hubWeights(hubs.length), [hubs.length])
@@ -147,9 +151,9 @@ export default function HubStatView() {
   const periodItems = Math.round(periodKg / 0.0386) // avg item weight ~38.6g
   const periodGP = Math.round(baseGP * (periodKg / (baseKg || 1)))
 
-  // Top hub (by share).
+  // Top hub (by share of THIS period, so it reconciles with the ranking below).
   const topHub = hubs.reduce((top, h, i) => {
-    const kg = hubShareKg(i, baseKg)
+    const kg = hubShareKg(i, periodKg)
     return kg > (top?.kg ?? -1) ? { ...h, kg } : top
   }, null)
 
@@ -161,9 +165,10 @@ export default function HubStatView() {
     color: CATEGORIES[c.category]?.color || '#64748b',
   }))
 
-  // Hub ranking (all hubs, this period).
+  // Hub ranking (all hubs, this period). Distributes the SAME periodKg shown in
+  // the Recycled KPI, so bars sum to the headline figure (no baseKg fallback).
   const ranking = hubs
-    .map((h, i) => ({ ...h, kg: Math.round(hubShareKg(i, periodKg || baseKg)) }))
+    .map((h, i) => ({ ...h, kg: Math.round(hubShareKg(i, periodKg)) }))
     .sort((a, b) => b.kg - a.kg)
   const rankTotal = ranking.reduce((s, r) => s + r.kg, 0) || 1
   const medal = ['🥇', '🥈', '🥉']
