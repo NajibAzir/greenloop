@@ -21,6 +21,25 @@ function emptyAccount(accountType) {
   }
 }
 
+// Editable profile cards per persona (no auth — just account details shown on
+// the Profile page).
+function defaultProfiles() {
+  return {
+    residence: {
+      id: 'USER-00000001',
+      name: 'fath',
+      email: 'fathinzy@gmail.com',
+      address: '16A, Jalan Anggerik, Kampung Melayu',
+    },
+    tenant: {
+      id: 'TENT-00000001',
+      name: 'kedai kopitiam',
+      email: 'kopitiam@gmail.com',
+      address: 'Lot G-08, Greenview Mall',
+    },
+  }
+}
+
 export function initialState() {
   return {
     accountType: 'residence', // active persona
@@ -28,6 +47,7 @@ export function initialState() {
       residence: emptyAccount('residence'),
       tenant: emptyAccount('tenant'),
     },
+    profiles: defaultProfiles(),
     // Township-wide operations data (independent of the active persona):
     opsTransactions: [], // feeds Diversion Metrics + Financial Ledger
     hubLoads: initialHubLoads(), // live bin levels for the dispatch sim seed
@@ -145,6 +165,15 @@ export function reducer(state, action) {
       return { ...state, accountType: action.accountType }
     }
 
+    case 'UPDATE_PROFILE': {
+      const persona = action.persona || state.accountType
+      if (!state.profiles?.[persona]) return state
+      return {
+        ...state,
+        profiles: { ...state.profiles, [persona]: { ...state.profiles[persona], ...action.patch } },
+      }
+    }
+
     case 'SEED': {
       // Township operations throughput (ledger/metrics) + a modest per-account
       // starting balance/history so both personas look populated.
@@ -153,6 +182,7 @@ export function reducer(state, action) {
       return {
         ...base,
         accountType: state.accountType,
+        profiles: state.profiles,
         opsTransactions: txs,
         accounts: {
           residence: seedAccount('residence', action.residenceTx || []),
@@ -162,7 +192,7 @@ export function reducer(state, action) {
     }
 
     case 'RESET':
-      return { ...initialState(), accountType: state.accountType }
+      return { ...initialState(), accountType: state.accountType, profiles: state.profiles }
 
     case 'HYDRATE':
       return { ...initialState(), ...action.state }

@@ -3,6 +3,9 @@ import { useStore } from './store/StoreContext.jsx'
 import { buildSeedTransactions, buildAccountHistory } from './lib/seed.js'
 import ResidentView from './views/ResidentView.jsx'
 import ManagementView from './views/ManagementView.jsx'
+import ProfileView from './views/ProfileView.jsx'
+import RecycleHubView from './views/RecycleHubView.jsx'
+import HubStatView from './views/HubStatView.jsx'
 
 // Two personas, each with its own menu. The sidebar shows only the active
 // persona's items; a top-level switch toggles between them.
@@ -12,6 +15,7 @@ const MODES = {
     short: 'Resident',
     icon: '🙋',
     items: [
+      { id: 'profile', label: 'Profile', icon: '🧑' },
       { id: 'dropoff', label: 'Scan & Drop-off', icon: '📷' },
       { id: 'redeem', label: 'Redeem Vouchers', icon: '🎟️' },
       { id: 'offset', label: 'Offset Maintenance Fee', icon: '🏠' },
@@ -26,11 +30,14 @@ const MODES = {
       { id: 'metrics', label: 'Diversion Metrics', icon: '📊' },
       { id: 'ledger', label: 'Financial Ledger', icon: '💰' },
       { id: 'logistics', label: 'Logistics & Dispatch', icon: '🚛' },
+      { id: 'recyclehub', label: 'Recycle Hub', icon: '🗑️' },
+      { id: 'hubstat', label: 'Hub Stat', icon: '📈' },
     ],
   },
 }
 
 const PAGE_TITLES = {
+  profile: 'Profile',
   dropoff: 'Scan & Drop-off',
   redeem: 'Redeem Vouchers',
   offset: 'Offset Maintenance Fee',
@@ -38,9 +45,12 @@ const PAGE_TITLES = {
   metrics: 'Diversion Metrics',
   ledger: 'Financial Ledger',
   logistics: 'Logistics & Dispatch',
+  recyclehub: 'Recycle Hub',
+  hubstat: 'Hub Stat',
 }
 
 const PAGE_SUBTITLES = {
+  profile: 'Your account, Green Point balance and details.',
   dropoff: 'Scan an item for recyclability, then drop it at the Smart Hub to earn Green Points.',
   redeem: 'Spend your Green Points like cash at township mall tenants.',
   offset: 'Apply Green Points to this month’s township maintenance fee.',
@@ -48,6 +58,8 @@ const PAGE_SUBTITLES = {
   metrics: 'Live landfill diversion across the township, broken down by material.',
   ledger: 'Operating ROI, payback and revenue forecast for the hub.',
   logistics: 'Predicted hub capacity and AI dispatch of the collection fleet.',
+  recyclehub: 'Registered recycle hubs — open a hub to run the Smart Recycle Bin.',
+  hubstat: 'Hub station performance, material breakdown and contribution ranking.',
 }
 
 function ModeSwitch({ mode, setMode }) {
@@ -219,7 +231,13 @@ export default function App() {
 
         <main className="flex-1 overflow-y-auto p-6">
           <div className="mx-auto max-w-5xl">
-            {mode === 'resident' ? (
+            {active === 'profile' ? (
+              <ProfileView />
+            ) : active === 'recyclehub' ? (
+              <RecycleHubView />
+            ) : active === 'hubstat' ? (
+              <HubStatView />
+            ) : mode === 'resident' ? (
               <ResidentView page={active} />
             ) : (
               <ManagementView page={active} />
